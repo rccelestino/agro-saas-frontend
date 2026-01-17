@@ -1,0 +1,5 @@
+<svg width="160" height="40" viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="40" height="40" rx="8" fill="#2E7D32"></rect>
+  <path d="M20 10C15 18 18 30 20 30C22 30 25 18 20 10Z" fill="#66BB6A"></path>
+  <text x="50" y="27" font-size="20" fill="#2E7D32" font-family="Arial">AgroSaaS</text>
+</svg>

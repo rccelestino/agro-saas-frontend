@@ -7,6 +7,6 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   token: string;
-  userId: number;
   email: string;
+  userId: number;
 };

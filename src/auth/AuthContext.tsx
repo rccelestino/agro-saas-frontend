@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import type { LoginResponse } from '../types/auth';
+import type { LoginResponse } from '../api/auth.api';
 
 type AuthContextType = {
   token: string | null;
   userId: number | null;
   email: string | null;
-  login: (data: LoginResponse) => void;
+  nome: string | null;
+  login: (data: LoginResponse & { nome?: string }) => void;
   logout: () => void;
 };
 
@@ -26,14 +27,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.getItem('email')
   );
 
-  function login(data: LoginResponse) {
+  const [nome, setNome] = useState<string | null>(
+    localStorage.getItem('nome')
+  );
+
+  function login(data: LoginResponse & { nome?: string }) {
     localStorage.setItem('token', data.token);
     localStorage.setItem('userId', String(data.userId));
     localStorage.setItem('email', data.email);
+    if (data.nome) localStorage.setItem('nome', data.nome);
 
     setToken(data.token);
     setUserId(data.userId);
     setEmail(data.email);
+    setNome(data.nome || null);
   }
 
   function logout() {
@@ -41,10 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUserId(null);
     setEmail(null);
+    setNome(null);
   }
 
   return (
-    <AuthContext.Provider value={{ token, userId, email, login, logout }}>
+    <AuthContext.Provider value={{ token, userId, email, nome, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

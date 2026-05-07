@@ -1,64 +1,6 @@
 --
 -- PostgreSQL database dump
 --
-
--- Dumped from database version 11.13
--- Dumped by pg_dump version 16.3
-
--- Started on 2026-02-24 05:41:10
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- TOC entry 8 (class 2615 OID 40072)
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
---
-
--- *not* creating schema, since initdb creates it
-
-
-ALTER SCHEMA public OWNER TO postgres;
-
---
--- TOC entry 3450 (class 0 OID 0)
--- Dependencies: 8
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA public IS '';
-
-
---
--- TOC entry 2 (class 3079 OID 40344)
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
-
-
---
--- TOC entry 3452 (class 0 OID 0)
--- Dependencies: 2
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
-
-
-SET default_tablespace = '';
-
---
--- TOC entry 209 (class 1259 OID 40169)
--- Name: colheita; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.colheita (
@@ -70,36 +12,6 @@ CREATE TABLE public.colheita (
     criado_em timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.colheita OWNER TO postgres;
-
---
--- TOC entry 208 (class 1259 OID 40167)
--- Name: colheita_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.colheita_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.colheita_id_seq OWNER TO postgres;
-
---
--- TOC entry 3453 (class 0 OID 0)
--- Dependencies: 208
--- Name: colheita_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.colheita_id_seq OWNED BY public.colheita.id;
-
-
---
--- TOC entry 219 (class 1259 OID 40236)
--- Name: contas_pagar; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.contas_pagar (
@@ -116,36 +28,6 @@ CREATE TABLE public.contas_pagar (
 );
 
 
-ALTER TABLE public.contas_pagar OWNER TO postgres;
-
---
--- TOC entry 218 (class 1259 OID 40234)
--- Name: contas_pagar_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.contas_pagar_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.contas_pagar_id_seq OWNER TO postgres;
-
---
--- TOC entry 3454 (class 0 OID 0)
--- Dependencies: 218
--- Name: contas_pagar_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.contas_pagar_id_seq OWNED BY public.contas_pagar.id;
-
-
---
--- TOC entry 221 (class 1259 OID 40271)
--- Name: contas_receber; Type: TABLE; Schema: public; Owner: postgres
---
 
 CREATE TABLE public.contas_receber (
     id bigint NOT NULL,
@@ -160,32 +42,6 @@ CREATE TABLE public.contas_receber (
     recebido boolean DEFAULT false,
     criado_em timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
-
-
-ALTER TABLE public.contas_receber OWNER TO postgres;
-
---
--- TOC entry 220 (class 1259 OID 40269)
--- Name: contas_receber_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.contas_receber_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.contas_receber_id_seq OWNER TO postgres;
-
---
--- TOC entry 3455 (class 0 OID 0)
--- Dependencies: 220
--- Name: contas_receber_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.contas_receber_id_seq OWNED BY public.contas_receber.id;
 
 
 --
@@ -203,33 +59,6 @@ CREATE TABLE public.cultivo (
     previsao_colheita date,
     criado_em timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
-
-
-ALTER TABLE public.cultivo OWNER TO postgres;
-
---
--- TOC entry 202 (class 1259 OID 40116)
--- Name: cultivo_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.cultivo_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.cultivo_id_seq OWNER TO postgres;
-
---
--- TOC entry 3456 (class 0 OID 0)
--- Dependencies: 202
--- Name: cultivo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.cultivo_id_seq OWNED BY public.cultivo.id;
-
 
 --
 -- TOC entry 197 (class 1259 OID 40073)
@@ -249,14 +78,6 @@ CREATE TABLE public.flyway_schema_history (
     success boolean NOT NULL
 );
 
-
-ALTER TABLE public.flyway_schema_history OWNER TO postgres;
-
---
--- TOC entry 213 (class 1259 OID 40200)
--- Name: indicador_sustentabilidade; Type: TABLE; Schema: public; Owner: postgres
---
-
 CREATE TABLE public.indicador_sustentabilidade (
     id bigint NOT NULL,
     propriedade_id bigint NOT NULL,
@@ -266,33 +87,6 @@ CREATE TABLE public.indicador_sustentabilidade (
     data_checagem date,
     criado_em timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
-
-
-ALTER TABLE public.indicador_sustentabilidade OWNER TO postgres;
-
---
--- TOC entry 212 (class 1259 OID 40198)
--- Name: indicador_sustentabilidade_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.indicador_sustentabilidade_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.indicador_sustentabilidade_id_seq OWNER TO postgres;
-
---
--- TOC entry 3457 (class 0 OID 0)
--- Dependencies: 212
--- Name: indicador_sustentabilidade_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.indicador_sustentabilidade_id_seq OWNED BY public.indicador_sustentabilidade.id;
-
 
 --
 -- TOC entry 207 (class 1259 OID 40152)
@@ -310,33 +104,6 @@ CREATE TABLE public.insumo (
     criado_em timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.insumo OWNER TO postgres;
-
---
--- TOC entry 206 (class 1259 OID 40150)
--- Name: insumo_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.insumo_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.insumo_id_seq OWNER TO postgres;
-
---
--- TOC entry 3458 (class 0 OID 0)
--- Dependencies: 206
--- Name: insumo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.insumo_id_seq OWNED BY public.insumo.id;
-
-
 --
 -- TOC entry 215 (class 1259 OID 40214)
 -- Name: pessoa; Type: TABLE; Schema: public; Owner: postgres
@@ -352,33 +119,6 @@ CREATE TABLE public.pessoa (
     criado_em timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.pessoa OWNER TO postgres;
-
---
--- TOC entry 214 (class 1259 OID 40212)
--- Name: pessoa_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pessoa_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pessoa_id_seq OWNER TO postgres;
-
---
--- TOC entry 3459 (class 0 OID 0)
--- Dependencies: 214
--- Name: pessoa_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pessoa_id_seq OWNED BY public.pessoa.id;
-
-
 --
 -- TOC entry 222 (class 1259 OID 40309)
 -- Name: pessoa_propriedade; Type: TABLE; Schema: public; Owner: postgres
@@ -393,32 +133,6 @@ CREATE TABLE public.pessoa_propriedade (
 );
 
 
-ALTER TABLE public.pessoa_propriedade OWNER TO postgres;
-
---
--- TOC entry 223 (class 1259 OID 40331)
--- Name: pessoa_propriedade_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pessoa_propriedade_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pessoa_propriedade_id_seq OWNER TO postgres;
-
---
--- TOC entry 3460 (class 0 OID 0)
--- Dependencies: 223
--- Name: pessoa_propriedade_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pessoa_propriedade_id_seq OWNED BY public.pessoa_propriedade.id;
-
-
 --
 -- TOC entry 233 (class 1259 OID 40551)
 -- Name: pmo_acesso; Type: TABLE; Schema: public; Owner: postgres
@@ -429,32 +143,6 @@ CREATE TABLE public.pmo_acesso (
     versao_id bigint NOT NULL,
     roteiro_acesso text
 );
-
-
-ALTER TABLE public.pmo_acesso OWNER TO postgres;
-
---
--- TOC entry 232 (class 1259 OID 40549)
--- Name: pmo_acesso_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_acesso_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_acesso_id_seq OWNER TO postgres;
-
---
--- TOC entry 3461 (class 0 OID 0)
--- Dependencies: 232
--- Name: pmo_acesso_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_acesso_id_seq OWNED BY public.pmo_acesso.id;
 
 
 --
@@ -487,35 +175,10 @@ CREATE TABLE public.pmo_agua (
 );
 
 
-ALTER TABLE public.pmo_agua OWNER TO postgres;
-
---
--- TOC entry 240 (class 1259 OID 40617)
--- Name: pmo_agua_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_agua_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_agua_id_seq OWNER TO postgres;
-
 --
 -- TOC entry 3462 (class 0 OID 0)
 -- Dependencies: 240
 -- Name: pmo_agua_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_agua_id_seq OWNED BY public.pmo_agua.id;
-
-
---
--- TOC entry 279 (class 1259 OID 40942)
--- Name: pmo_anexo; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.pmo_anexo (
@@ -528,32 +191,6 @@ CREATE TABLE public.pmo_anexo (
     descricao text,
     criado_em timestamp without time zone DEFAULT now() NOT NULL
 );
-
-
-ALTER TABLE public.pmo_anexo OWNER TO postgres;
-
---
--- TOC entry 278 (class 1259 OID 40940)
--- Name: pmo_anexo_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_anexo_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_anexo_id_seq OWNER TO postgres;
-
---
--- TOC entry 3463 (class 0 OID 0)
--- Dependencies: 278
--- Name: pmo_anexo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_anexo_id_seq OWNED BY public.pmo_anexo.id;
 
 
 --
@@ -574,34 +211,7 @@ CREATE TABLE public.pmo_animais (
     oferecem_risco_contaminacao boolean,
     mitigacao_risco text
 );
-
-
-ALTER TABLE public.pmo_animais OWNER TO postgres;
-
 --
--- TOC entry 252 (class 1259 OID 40721)
--- Name: pmo_animais_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_animais_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_animais_id_seq OWNER TO postgres;
-
---
--- TOC entry 3464 (class 0 OID 0)
--- Dependencies: 252
--- Name: pmo_animais_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_animais_id_seq OWNED BY public.pmo_animais.id;
-
-
 --
 -- TOC entry 231 (class 1259 OID 40536)
 -- Name: pmo_area_resumo; Type: TABLE; Schema: public; Owner: postgres
@@ -618,32 +228,6 @@ CREATE TABLE public.pmo_area_resumo (
 );
 
 
-ALTER TABLE public.pmo_area_resumo OWNER TO postgres;
-
---
--- TOC entry 230 (class 1259 OID 40534)
--- Name: pmo_area_resumo_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_area_resumo_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_area_resumo_id_seq OWNER TO postgres;
-
---
--- TOC entry 3465 (class 0 OID 0)
--- Dependencies: 230
--- Name: pmo_area_resumo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_area_resumo_id_seq OWNED BY public.pmo_area_resumo.id;
-
-
 --
 -- TOC entry 273 (class 1259 OID 40888)
 -- Name: pmo_armazenamento; Type: TABLE; Schema: public; Owner: postgres
@@ -655,33 +239,6 @@ CREATE TABLE public.pmo_armazenamento (
     locais_organicos text,
     locais_nao_organicos text
 );
-
-
-ALTER TABLE public.pmo_armazenamento OWNER TO postgres;
-
---
--- TOC entry 272 (class 1259 OID 40886)
--- Name: pmo_armazenamento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_armazenamento_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_armazenamento_id_seq OWNER TO postgres;
-
---
--- TOC entry 3466 (class 0 OID 0)
--- Dependencies: 272
--- Name: pmo_armazenamento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_armazenamento_id_seq OWNED BY public.pmo_armazenamento.id;
-
 
 --
 -- TOC entry 245 (class 1259 OID 40655)
@@ -706,33 +263,6 @@ CREATE TABLE public.pmo_biodiversidade (
     safs boolean,
     outros text
 );
-
-
-ALTER TABLE public.pmo_biodiversidade OWNER TO postgres;
-
---
--- TOC entry 244 (class 1259 OID 40653)
--- Name: pmo_biodiversidade_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_biodiversidade_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_biodiversidade_id_seq OWNER TO postgres;
-
---
--- TOC entry 3467 (class 0 OID 0)
--- Dependencies: 244
--- Name: pmo_biodiversidade_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_biodiversidade_id_seq OWNED BY public.pmo_biodiversidade.id;
-
 
 --
 -- TOC entry 277 (class 1259 OID 40924)
@@ -763,33 +293,6 @@ CREATE TABLE public.pmo_comercializacao (
     assistencia_tecnica_frequencia text
 );
 
-
-ALTER TABLE public.pmo_comercializacao OWNER TO postgres;
-
---
--- TOC entry 276 (class 1259 OID 40922)
--- Name: pmo_comercializacao_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_comercializacao_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_comercializacao_id_seq OWNER TO postgres;
-
---
--- TOC entry 3468 (class 0 OID 0)
--- Dependencies: 276
--- Name: pmo_comercializacao_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_comercializacao_id_seq OWNED BY public.pmo_comercializacao.id;
-
-
 --
 -- TOC entry 247 (class 1259 OID 40673)
 -- Name: pmo_controles; Type: TABLE; Schema: public; Owner: postgres
@@ -811,33 +314,6 @@ CREATE TABLE public.pmo_controles (
     origem_outros text
 );
 
-
-ALTER TABLE public.pmo_controles OWNER TO postgres;
-
---
--- TOC entry 246 (class 1259 OID 40671)
--- Name: pmo_controles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_controles_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_controles_id_seq OWNER TO postgres;
-
---
--- TOC entry 3469 (class 0 OID 0)
--- Dependencies: 246
--- Name: pmo_controles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_controles_id_seq OWNED BY public.pmo_controles.id;
-
-
 --
 -- TOC entry 255 (class 1259 OID 40741)
 -- Name: pmo_cultivo_item; Type: TABLE; Schema: public; Owner: postgres
@@ -855,33 +331,6 @@ CREATE TABLE public.pmo_cultivo_item (
     observacao text
 );
 
-
-ALTER TABLE public.pmo_cultivo_item OWNER TO postgres;
-
---
--- TOC entry 254 (class 1259 OID 40739)
--- Name: pmo_cultivo_item_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_cultivo_item_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_cultivo_item_id_seq OWNER TO postgres;
-
---
--- TOC entry 3470 (class 0 OID 0)
--- Dependencies: 254
--- Name: pmo_cultivo_item_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_cultivo_item_id_seq OWNED BY public.pmo_cultivo_item.id;
-
-
 --
 -- TOC entry 251 (class 1259 OID 40707)
 -- Name: pmo_equipamento; Type: TABLE; Schema: public; Owner: postgres
@@ -896,34 +345,7 @@ CREATE TABLE public.pmo_equipamento (
     observacao text
 );
 
-
-ALTER TABLE public.pmo_equipamento OWNER TO postgres;
-
---
--- TOC entry 250 (class 1259 OID 40705)
--- Name: pmo_equipamento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_equipamento_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_equipamento_id_seq OWNER TO postgres;
-
---
--- TOC entry 3471 (class 0 OID 0)
--- Dependencies: 250
--- Name: pmo_equipamento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_equipamento_id_seq OWNED BY public.pmo_equipamento.id;
-
-
---
+---
 -- TOC entry 249 (class 1259 OID 40691)
 -- Name: pmo_estrutura; Type: TABLE; Schema: public; Owner: postgres
 --
@@ -936,33 +358,6 @@ CREATE TABLE public.pmo_estrutura (
     estado character varying(40),
     observacao text
 );
-
-
-ALTER TABLE public.pmo_estrutura OWNER TO postgres;
-
---
--- TOC entry 248 (class 1259 OID 40689)
--- Name: pmo_estrutura_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_estrutura_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_estrutura_id_seq OWNER TO postgres;
-
---
--- TOC entry 3472 (class 0 OID 0)
--- Dependencies: 248
--- Name: pmo_estrutura_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_estrutura_id_seq OWNED BY public.pmo_estrutura.id;
-
 
 --
 -- TOC entry 259 (class 1259 OID 40776)
@@ -979,32 +374,6 @@ CREATE TABLE public.pmo_insumo_adubacao (
 );
 
 
-ALTER TABLE public.pmo_insumo_adubacao OWNER TO postgres;
-
---
--- TOC entry 258 (class 1259 OID 40774)
--- Name: pmo_insumo_adubacao_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_insumo_adubacao_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_insumo_adubacao_id_seq OWNER TO postgres;
-
---
--- TOC entry 3473 (class 0 OID 0)
--- Dependencies: 258
--- Name: pmo_insumo_adubacao_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_insumo_adubacao_id_seq OWNED BY public.pmo_insumo_adubacao.id;
-
-
 --
 -- TOC entry 261 (class 1259 OID 40792)
 -- Name: pmo_insumo_defensivo; Type: TABLE; Schema: public; Owner: postgres
@@ -1019,33 +388,6 @@ CREATE TABLE public.pmo_insumo_defensivo (
     quantidade_dose character varying(200)
 );
 
-
-ALTER TABLE public.pmo_insumo_defensivo OWNER TO postgres;
-
---
--- TOC entry 260 (class 1259 OID 40790)
--- Name: pmo_insumo_defensivo_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_insumo_defensivo_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_insumo_defensivo_id_seq OWNER TO postgres;
-
---
--- TOC entry 3474 (class 0 OID 0)
--- Dependencies: 260
--- Name: pmo_insumo_defensivo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_insumo_defensivo_id_seq OWNED BY public.pmo_insumo_defensivo.id;
-
-
 --
 -- TOC entry 227 (class 1259 OID 40500)
 -- Name: pmo_integrante_familiar; Type: TABLE; Schema: public; Owner: postgres
@@ -1059,33 +401,6 @@ CREATE TABLE public.pmo_integrante_familiar (
     contato character varying(120)
 );
 
-
-ALTER TABLE public.pmo_integrante_familiar OWNER TO postgres;
-
---
--- TOC entry 226 (class 1259 OID 40498)
--- Name: pmo_integrante_familiar_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_integrante_familiar_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_integrante_familiar_id_seq OWNER TO postgres;
-
---
--- TOC entry 3475 (class 0 OID 0)
--- Dependencies: 226
--- Name: pmo_integrante_familiar_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_integrante_familiar_id_seq OWNED BY public.pmo_integrante_familiar.id;
-
-
 --
 -- TOC entry 275 (class 1259 OID 40906)
 -- Name: pmo_integridade; Type: TABLE; Schema: public; Owner: postgres
@@ -1098,33 +413,6 @@ CREATE TABLE public.pmo_integridade (
     medidas_evitar_contaminacao text
 );
 
-
-ALTER TABLE public.pmo_integridade OWNER TO postgres;
-
---
--- TOC entry 274 (class 1259 OID 40904)
--- Name: pmo_integridade_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_integridade_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_integridade_id_seq OWNER TO postgres;
-
---
--- TOC entry 3476 (class 0 OID 0)
--- Dependencies: 274
--- Name: pmo_integridade_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_integridade_id_seq OWNED BY public.pmo_integridade.id;
-
-
 --
 -- TOC entry 257 (class 1259 OID 40758)
 -- Name: pmo_materia_organica; Type: TABLE; Schema: public; Owner: postgres
@@ -1135,32 +423,6 @@ CREATE TABLE public.pmo_materia_organica (
     versao_id bigint NOT NULL,
     como_faz_compostagem text
 );
-
-
-ALTER TABLE public.pmo_materia_organica OWNER TO postgres;
-
---
--- TOC entry 256 (class 1259 OID 40756)
--- Name: pmo_materia_organica_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.pmo_materia_organica_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_materia_organica_id_seq OWNER TO postgres;
-
---
--- TOC entry 3477 (class 0 OID 0)
--- Dependencies: 256
--- Name: pmo_materia_organica_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_materia_organica_id_seq OWNED BY public.pmo_materia_organica.id;
 
 
 --
@@ -1176,32 +438,10 @@ CREATE TABLE public.pmo_origem_semente_item (
     condicao character varying(20) NOT NULL
 );
 
-
-ALTER TABLE public.pmo_origem_semente_item OWNER TO postgres;
-
 --
 -- TOC entry 268 (class 1259 OID 40855)
 -- Name: pmo_origem_semente_item_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
-
-CREATE SEQUENCE public.pmo_origem_semente_item_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.pmo_origem_semente_item_id_seq OWNER TO postgres;
-
---
--- TOC entry 3478 (class 0 OID 0)
--- Dependencies: 268
--- Name: pmo_origem_semente_item_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.pmo_origem_semente_item_id_seq OWNED BY public.pmo_origem_semente_item.id;
-
 
 --
 -- TOC entry 225 (class 1259 OID 40481)
@@ -1231,9 +471,6 @@ CREATE TABLE public.pmo_plano (
     geo_lat_num numeric(9,6),
     geo_lng_num numeric(9,6)
 );
-
-
-ALTER TABLE public.pmo_plano OWNER TO postgres;
 
 --
 -- TOC entry 271 (class 1259 OID 40870)

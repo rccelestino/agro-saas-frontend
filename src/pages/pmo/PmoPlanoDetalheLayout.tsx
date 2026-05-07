@@ -40,14 +40,17 @@ export default function PmoPlanoDetalheLayout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [planoId]);
 
-  const tabValue = useMemo<"resumo" | "versoes">(() => {
+  // Determina qual aba está ativa baseado na URL
+  const tabValue = useMemo<"resumo" | "versoes" | "integrantes">(() => {
     if (location.pathname.endsWith("/versoes")) return "versoes";
+    if (location.pathname.endsWith("/integrantes")) return "integrantes";
     return "resumo";
   }, [location.pathname]);
 
-  const onTabChange = (_: React.SyntheticEvent, value: "resumo" | "versoes") => {
+  const onTabChange = (_: React.SyntheticEvent, value: "resumo" | "versoes" | "integrantes") => {
     if (value === "resumo") navigate(`/pmo/planos/${planoId}`);
     if (value === "versoes") navigate(`/pmo/planos/${planoId}/versoes`);
+    if (value === "integrantes") navigate(`/pmo/planos/${planoId}/integrantes`);
   };
 
   if (!Number.isFinite(planoId)) {
@@ -87,6 +90,7 @@ export default function PmoPlanoDetalheLayout() {
         >
           <Tab value="resumo" label="Resumo" />
           <Tab value="versoes" label="Versões" />
+          <Tab value="integrantes" label="Integrantes da Família" />
         </Tabs>
       </Paper>
 

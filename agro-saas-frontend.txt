@@ -6,14 +6,14 @@
 12/04/2026  19:28    <DIR>          .
 12/04/2026  19:28    <DIR>          ..
 17/01/2026  12:31               277 .gitignore
-06/05/2026  07:27                 0 agro-saas-frontend.txt
+12/05/2026  09:21                38 agro-saas-frontend.txt
 17/01/2026  12:31                 0 agrodb_dll.sql
 24/02/2026  05:41    <DIR>          docs
 17/01/2026  12:31               639 eslint.config.js
 17/01/2026  12:31               380 index.html
-17/01/2026  12:31    <DIR>          node_modules
-21/04/2026  15:29           171.040 package-lock.json
-21/04/2026  15:29             1.114 package.json
+07/05/2026  11:27    <DIR>          node_modules
+07/05/2026  11:27           179.654 package-lock.json
+07/05/2026  11:27             1.168 package.json
 17/01/2026  12:31    <DIR>          public
 17/01/2026  12:31             2.670 README.md
 04/05/2026  19:46    <DIR>          src
@@ -22,7 +22,23 @@
 17/01/2026  12:31               679 tsconfig.node.json
 12/04/2026  19:28    <DIR>          uploads
 17/01/2026  12:31               168 vite.config.ts
-              12 arquivo(s)        177.853 bytes
+              12 arquivo(s)        186.559 bytes
+
+ Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\.git
+
+07/05/2026  09:15                59 COMMIT_EDITMSG
+17/01/2026  12:36               312 config
+17/01/2026  11:24                73 description
+17/01/2026  12:32               109 FETCH_HEAD
+17/01/2026  12:31                21 HEAD
+17/01/2026  11:24    <DIR>          hooks
+07/05/2026  09:15         7.387.813 index
+17/01/2026  11:43    <DIR>          info
+17/01/2026  11:42    <DIR>          logs
+07/05/2026  09:15    <DIR>          objects
+17/01/2026  12:28                41 ORIG_HEAD
+17/01/2026  11:34    <DIR>          refs
+               7 arquivo(s)      7.388.428 bytes
 
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\public
@@ -36,7 +52,7 @@
 
 04/05/2026  19:46    <DIR>          .
 04/05/2026  19:46    <DIR>          ..
-05/05/2026  07:54    <DIR>          api
+06/05/2026  10:06    <DIR>          api
 17/01/2026  12:31    <DIR>          app
 17/01/2026  12:31               648 App.css
 17/01/2026  12:31               888 App.tsx
@@ -48,30 +64,34 @@
 21/04/2026  15:39               797 main.tsx
 05/05/2026  07:55    <DIR>          pages
 17/01/2026  12:31    <DIR>          types
-05/05/2026  07:56    <DIR>          utils
+06/05/2026  11:41    <DIR>          utils
 17/01/2026  12:31               123 vite-env.d.ts
                5 arquivo(s)          3.678 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\api
 
-05/05/2026  07:54    <DIR>          .
-05/05/2026  07:54    <DIR>          ..
+06/05/2026  10:06    <DIR>          .
+06/05/2026  10:06    <DIR>          ..
 19/04/2026  09:37             1.124 auth.api.ts
 18/04/2026  15:35               663 axios.ts
 17/01/2026  12:31               365 dashboard.api.ts
-17/01/2026  12:31               631 pessoa.api.ts
+06/05/2026  11:41             1.227 pessoa.api.ts
 04/05/2026  19:39             2.781 pmo.api.ts
 17/01/2026  13:55             1.140 pmoAgua.api.ts
 12/04/2026  17:45               918 pmoAnexos.api.ts
 25/03/2026  12:32             1.003 pmoAnimais.api.ts
 12/04/2026  17:45               635 pmoAreaResumo.api.ts
+06/05/2026  10:06               674 pmoAssistenciaTecnica.api.ts
+06/05/2026  10:05               712 pmoAtividadesEducativas.api.ts
 21/04/2026  09:12             1.368 pmoBiodiversidade.api.ts
 11/04/2026  12:05             2.200 pmoComercializacao.api.ts
+06/05/2026  08:11               813 pmoControlesPropriedade.api.ts
 25/04/2026  18:45             3.712 pmoCultivos.api.ts
 11/04/2026  10:48             1.483 pmoEstruturas.api.ts
+06/05/2026  10:06               713 pmoFerramentas.api.ts
 12/04/2026  17:45               546 pmoIntegrantes.api.ts
 26/04/2026  18:53             2.400 pmoMateriaOrganica.api.ts
-05/05/2026  07:54             1.634 pmoRelatorio.api.ts
+07/05/2026  11:13             1.893 pmoRelatorio.api.ts
 13/04/2026  15:17             1.261 pmoRiscoContaminacao.api.ts
 05/04/2026  21:08             1.933 pmoSementes.api.ts
 23/03/2026  21:16               615 pmoSolo.api.ts
@@ -79,15 +99,15 @@
 12/04/2026  20:38             2.161 pmoVersao.api.ts
 17/01/2026  12:31               410 propriedade.api.ts
 21/04/2026  15:29               334 queryClient.ts
-              23 arquivo(s)         30.267 bytes
+              27 arquivo(s)         34.034 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\app
 
 17/01/2026  12:31    <DIR>          .
 17/01/2026  12:31    <DIR>          ..
-05/05/2026  07:58             9.525 routes.tsx
+06/05/2026  10:29            10.762 routes.tsx
 17/01/2026  12:31               425 theme.ts
-               2 arquivo(s)          9.950 bytes
+               2 arquivo(s)         11.187 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\assets
 
@@ -119,10 +139,10 @@
 
 17/01/2026  12:31    <DIR>          .
 17/01/2026  12:31    <DIR>          ..
-05/05/2026  16:03             8.022 DashboardLayout.tsx
+06/05/2026  10:30             8.049 DashboardLayout.tsx
 17/01/2026  12:31               755 MobileTopBar.tsx
 05/05/2026  15:15             7.452 Sidebar.tsx
-               3 arquivo(s)         16.229 bytes
+               3 arquivo(s)         16.256 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\hooks
 
@@ -138,7 +158,7 @@
 18/04/2026  16:07    <DIR>          dashboard
 18/04/2026  15:38    <DIR>          login
 17/01/2026  12:31    <DIR>          pessoas
-25/04/2026  18:24    <DIR>          pmo
+06/05/2026  10:07    <DIR>          pmo
 05/05/2026  07:55    <DIR>          relatorios
                0 arquivo(s)              0 bytes
 
@@ -147,8 +167,8 @@
 18/04/2026  16:07    <DIR>          .
 18/04/2026  16:07    <DIR>          ..
 11/04/2026  12:47             5.222 Dashboard.tsx
-05/05/2026  16:20            20.447 DashboardHome.tsx
-               2 arquivo(s)         25.669 bytes
+06/05/2026  10:13            21.393 DashboardHome.tsx
+               2 arquivo(s)         26.615 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\pages\login
 
@@ -164,24 +184,28 @@
 
 17/01/2026  12:31    <DIR>          .
 17/01/2026  12:31    <DIR>          ..
-17/01/2026  12:31             1.282 PessoaForm.tsx
-17/01/2026  12:31             1.117 PessoaList.tsx
-               2 arquivo(s)          2.399 bytes
+06/05/2026  11:42            13.244 PessoaForm.tsx
+06/05/2026  11:41             7.132 PessoaList.tsx
+               2 arquivo(s)         20.376 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\pages\pmo
 
-25/04/2026  18:24    <DIR>          .
-25/04/2026  18:24    <DIR>          ..
+06/05/2026  10:07    <DIR>          .
+06/05/2026  10:07    <DIR>          ..
 25/04/2026  18:26    <DIR>          cultivos
 13/04/2026  15:47            15.700 PmoAguaPage.tsx
 25/03/2026  12:33             8.031 PmoAnimaisPage.tsx
 12/04/2026  19:19            10.594 PmoAreaResumoPage.tsx
+06/05/2026  10:07             4.853 PmoAssistenciaTecnicaPage.tsx
+06/05/2026  10:06             4.795 PmoAtividadesEducativasPage.tsx
 21/04/2026  09:18            11.259 PmoBiodiversidadePage.tsx
 11/04/2026  12:05            14.526 PmoComercializacaoPage.tsx
+06/05/2026  08:12             7.172 PmoControlesPropriedadePage.tsx
 12/04/2026  19:44             4.978 PmoCroquiPage.tsx
 21/04/2026  16:05            17.426 PmoCultivosPage.tsx
 11/04/2026  12:29             8.027 PmoDeclaracaoPage.tsx
 11/04/2026  10:48            13.190 PmoEstruturasPage.tsx
+06/05/2026  10:07             7.646 PmoFerramentasPage.tsx
 12/04/2026  17:46             7.668 PmoIntegrantesPage.tsx
 26/04/2026  19:13            16.313 PmoMateriaOrganicaPage.tsx
 12/04/2026  17:58             3.375 PmoPlanoDetalheLayout.tsx
@@ -199,7 +223,7 @@
 17/01/2026  12:31               596 PmoVersaoResumoPage.tsx
 17/01/2026  12:31             6.335 PmoVersoesPage.tsx
 17/01/2026  13:56               214 usePmoVersao.ts
-              26 arquivo(s)        226.630 bytes
+              30 arquivo(s)        251.096 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\pages\pmo\cultivos
 
@@ -216,8 +240,8 @@
 
 05/05/2026  07:55    <DIR>          .
 05/05/2026  07:55    <DIR>          ..
-05/05/2026  15:27            15.582 RelatoriosPage.tsx
-               1 arquivo(s)         15.582 bytes
+07/05/2026  11:17            16.287 RelatoriosPage.tsx
+               1 arquivo(s)         16.287 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\types
 
@@ -230,12 +254,13 @@
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\utils
 
-05/05/2026  07:56    <DIR>          .
-05/05/2026  07:56    <DIR>          ..
+06/05/2026  11:41    <DIR>          .
+06/05/2026  11:41    <DIR>          ..
 05/05/2026  07:24             7.234 pdfGenerator.ts
-05/05/2026  07:56            15.170 pdfGeneratorCompleto.ts
-05/05/2026  07:56             3.724 pdfGeneratorSintetico.ts
-               3 arquivo(s)         26.128 bytes
+12/05/2026  09:13            40.175 pdfGeneratorCompleto.ts
+07/05/2026  13:21             9.482 pdfGeneratorSintetico.ts
+06/05/2026  11:41             2.915 validators.ts
+               4 arquivo(s)         59.806 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\uploads
 
@@ -244,5 +269,5 @@
                0 arquivo(s)              0 bytes
 
      Total de Arquivos na Lista:
-           60605 arquivo(s)    240.628.550 bytes
-            5939 pasta(s)   340.880.396.288 bytes dispon¡veis
+           65595 arquivo(s)    288.266.476 bytes
+            7256 pasta(s)   341.540.306.944 bytes dispon¡veis

@@ -40,17 +40,25 @@ export type PmoRelatorioSintetico = {
   canaisVenda: string;
 };
 
+// CORRIGIDO: Usar a URL exata do backend
 export async function getRelatorioCompleto(planoId: number, versaoId: number) {
   const { data } = await api.get<PmoRelatorioCompleto>(
-    `/pmo/relatorios/${planoId}/versoes/${versaoId}/completo`
+    `/api/pmo/relatorio/completo?planoId=${planoId}&versaoId=${versaoId}`
   );
   return data;
 }
 
+// CORRIGIDO: Usar a URL exata do backend
 export async function getRelatorioSintetico(planoId: number, versaoId: number) {
   const { data } = await api.get<PmoRelatorioSintetico>(
-    `/pmo/relatorios/${planoId}/versoes/${versaoId}/sintetico`
+    `/api/pmo/relatorio/sintetico?planoId=${planoId}&versaoId=${versaoId}`
   );
+  return data;
+}
+
+// Endpoint de teste
+export async function testarRelatorio() {
+  const { data } = await api.get(`/api/pmo/relatorio/teste`);
   return data;
 }
 

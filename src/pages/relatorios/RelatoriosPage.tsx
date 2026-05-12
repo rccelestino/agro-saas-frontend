@@ -95,16 +95,29 @@ export default function RelatoriosPage() {
     setGerando(true);
     setError(null);
     try {
+      console.log("=== GERANDO RELATÓRIO ===");
+      console.log("planoId:", planoSelecionado);
+      console.log("versaoId:", versaoSelecionada);
+      console.log("tipoRelatorio:", tipoRelatorio);
+      
       if (tipoRelatorio === "completo") {
+        console.log("Buscando relatório completo...");
         const data = await getRelatorioCompleto(planoSelecionado, versaoSelecionada);
+        console.log("Dados recebidos (completo):", data);
         await gerarRelatorioPDFCompleto(data);
       } else {
+        console.log("Buscando relatório sintético...");
         const data = await getRelatorioSintetico(planoSelecionado, versaoSelecionada);
+        console.log("Dados recebidos (sintético):", data);
         await gerarRelatorioPDFSintetico(data);
       }
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao gerar relatório.");
+      
+      console.log("Relatório gerado com sucesso!");
+    } catch (err: any) {
+      console.error("Erro detalhado:", err);
+      console.error("Response data:", err.response?.data);
+      console.error("Response status:", err.response?.status);
+      setError(`Erro ao gerar relatório: ${err.response?.data?.message || err.message}`);
     } finally {
       setGerando(false);
     }

@@ -1,3 +1,4 @@
+// src/pages/relatorios/RelatoriosPage.tsx
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -28,10 +29,10 @@ import {
 } from "@mui/icons-material";
 import {
   listarPlanosParaRelatorio,
-  listarVersoesParaRelatorio,
   getRelatorioCompleto,
   getRelatorioSintetico,
 } from "../../api/pmoRelatorio.api";
+import { listarVersoes } from "../../api/pmoVersao.api";
 import { gerarRelatorioPDFCompleto } from "../../utils/pdfGeneratorCompleto";
 import { gerarRelatorioPDFSintetico } from "../../utils/pdfGeneratorSintetico";
 
@@ -48,10 +49,20 @@ export default function RelatoriosPage() {
   const [versaoSelecionada, setVersaoSelecionada] = useState<number | null>(null);
   const [tipoRelatorio, setTipoRelatorio] = useState<"completo" | "sintetico">("completo");
   const [error, setError] = useState<string | null>(null);
+  const [loadingVersoes, setLoadingVersoes] = useState(false);
 
   useEffect(() => {
     loadPlanos();
   }, []);
+
+  useEffect(() => {
+    if (planoSelecionado) {
+      loadVersoes(planoSelecionado);
+    } else {
+      setVersoes([]);
+      setVersaoSelecionada(null);
+    }
+  }, [planoSelecionado]);
 
   async function loadPlanos() {
     setLoading(true);
@@ -67,23 +78,27 @@ export default function RelatoriosPage() {
   }
 
   async function loadVersoes(planoId: number) {
+    setLoadingVersoes(true);
     setVersoes([]);
     setVersaoSelecionada(null);
     try {
-      const data = await listarVersoesParaRelatorio(planoId);
+      console.log("Carregando versões para o plano:", planoId);
+      const data = await listarVersoes(planoId);
+      console.log("Versões recebidas:", data);
       setVersoes(data);
-      if (data.length === 1) {
+      if (data.length > 0) {
         setVersaoSelecionada(data[0].id);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao carregar versões:", err);
       setError("Erro ao carregar versões.");
+    } finally {
+      setLoadingVersoes(false);
     }
   }
 
   const handlePlanoChange = (planoId: number) => {
     setPlanoSelecionado(planoId);
-    loadVersoes(planoId);
   };
 
   const handleGerarRelatorio = async () => {
@@ -124,6 +139,7 @@ export default function RelatoriosPage() {
   };
 
   const planoAtual = planos.find(p => p.id === planoSelecionado);
+  const versaoAtual = versoes.find(v => v.id === versaoSelecionada);
 
   if (loading) {
     return (
@@ -208,7 +224,7 @@ export default function RelatoriosPage() {
         {/* Select Versão */}
         <FormControl fullWidth size={isSmallMobile ? "small" : "medium"} disabled={!planoSelecionado}>
           <InputLabel sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
-            Versão
+            Versão {loadingVersoes && <CircularProgress size={16} sx={{ ml: 1 }} />}
           </InputLabel>
           <Select
             value={versaoSelecionada ?? ""}
@@ -216,6 +232,11 @@ export default function RelatoriosPage() {
             label="Versão"
             sx={{ fontSize: { xs: "0.8rem", sm: "0.875rem" } }}
           >
+            {versoes.length === 0 && !loadingVersoes && (
+              <MenuItem disabled value="">
+                Nenhuma versão encontrada
+              </MenuItem>
+            )}
             {versoes.map((versao) => (
               <MenuItem 
                 key={versao.id} 
@@ -353,6 +374,14 @@ export default function RelatoriosPage() {
               </Typography>
             </Grid>
           </Grid>
+          {versaoAtual && (
+            <>
+              <Divider sx={{ my: 1.5 }} />
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: "0.6rem", sm: "0.7rem" } }}>
+                Versão selecionada: {versaoAtual.numeroVersao} - {versaoAtual.status}
+              </Typography>
+            </>
+          )}
         </Paper>
       )}
 

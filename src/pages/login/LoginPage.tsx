@@ -1,3 +1,4 @@
+// src/pages/login/LoginPage.tsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -18,7 +19,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 import { useAuth } from "../../auth/AuthContext";
-import { login } from "../../api/auth.api";
+import { login as apiLogin } from "../../api/auth.api";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -39,20 +40,24 @@ export default function LoginPage() {
 
     try {
       console.log("Tentando login com:", { email, senha });
-      const response = await login({ email, senha });
+      const response = await apiLogin({ email, senha });
       console.log("Resposta do login:", response);
       
-      // Extrair nome do email (parte antes do @) como nome temporário
-      const nomeTemp = email.split("@")[0];
+      // Verificar se o user foi salvo no localStorage
+      const savedUser = localStorage.getItem('user');
+      console.log("User salvo no localStorage:", savedUser);
       
-      // Salvar token, email, userId e nome no contexto e localStorage
-      authLogin({
-        ...response,
-        nome: response.nome || nomeTemp,
-      });
+      // Salvar token, email, userId, nome, role, empresa e propriedades no contexto
+      authLogin(response);
       
-      // Redirecionar para o dashboard
-      navigate("/");
+      // Redirecionar baseado na role
+      if (response.role === 'SUPER_ADMIN') {
+        console.log("Redirecionando para admin dashboard");
+        navigate("/admin");
+      } else {
+        console.log("Redirecionando para dashboard");
+        navigate("/dashboard");
+      }
     } catch (err: any) {
       console.error("Erro no login:", err);
       setError(err.response?.data?.message || "Erro ao fazer login");
@@ -73,7 +78,7 @@ export default function LoginPage() {
           px: { xs: 1, sm: 2 },
         }}
       >
-        <Paper sx={{ p: { xs: 2, sm: 4 }, width: "100%" }}>
+        <Paper sx={{ p: { xs: 2, sm: 4 }, width: "100%", borderRadius: 2 }}>
           {/* Logo e Título */}
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2 }}>
             <Avatar
@@ -117,6 +122,7 @@ export default function LoginPage() {
               required
               disabled={loading}
               size={isMobile ? "small" : "medium"}
+              autoFocus
             />
 
             <TextField
@@ -167,7 +173,7 @@ export default function LoginPage() {
               type="submit"
               variant="contained"
               disabled={loading}
-              sx={{ mt: 3 }}
+              sx={{ mt: 3, py: isMobile ? 1 : 1.5 }}
               size={isMobile ? "medium" : "large"}
             >
               {loading ? <CircularProgress size={isMobile ? 24 : 28} /> : "Entrar"}
@@ -177,7 +183,7 @@ export default function LoginPage() {
               <Typography variant="body2" fontSize={isMobile ? "0.75rem" : "0.875rem"}>
                 Não tem uma conta?{" "}
                 <Link to="/register" style={{ textDecoration: "none", fontWeight: "bold" }}>
-                  Toque aqui para criar uma
+                  Cadastre-se aqui
                 </Link>
               </Typography>
             </Box>

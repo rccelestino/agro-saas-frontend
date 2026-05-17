@@ -54,6 +54,9 @@ const PmoFerramentasPage = lazy(() => import("../pages/pmo/PmoFerramentasPage"))
 const PmoAssistenciaTecnicaPage = lazy(() => import("../pages/pmo/PmoAssistenciaTecnicaPage"));
 const RelatoriosPage = lazy(() => import("../pages/relatorios/RelatoriosPage"));
 
+const SuperAdminDashboard = lazy(() => import("../pages/admin/SuperAdminDashboard"));
+
+
 // Componente de loading
 const PageLoader = () => (
   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
@@ -79,6 +82,12 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        <Route path="admin" element={
+          <Suspense fallback={<PageLoader />}>
+            <SuperAdminDashboard />
+          </Suspense>
+        } />
+
         {/* Home - Dashboard principal */}
         <Route index element={
           <Suspense fallback={<PageLoader />}>

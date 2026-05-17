@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/pages/pmo/PmoPlanoList.tsx
+import { useState, useEffect } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   Box,
   Button,
@@ -37,9 +38,28 @@ import {
   Person,
   ExpandMore,
   ExpandLess,
+  Business as BusinessIcon,
 } from "@mui/icons-material";
 import { usePlanos, useExcluirPlano } from "../../hooks/usePmoPlano";
+import { listarPlanosPorEmpresa } from "../../api/pmo.api";
 import type { PmoPlanoResponse } from "../../api/pmo.api";
+import { useQuery } from "@tanstack/react-query";
+
+// Interface para o contexto do layout
+interface OutletContextType {
+  selectedEmpresaId: number | null;
+  empresas: any[];
+  isSuperAdmin: boolean;
+}
+
+// Hook para buscar planos por empresa
+const usePlanosPorEmpresa = (empresaId: number | null) => {
+  return useQuery({
+    queryKey: ['planos', 'empresa', empresaId],
+    queryFn: () => listarPlanosPorEmpresa(empresaId!),
+    enabled: !!empresaId,
+  });
+};
 
 export default function PmoPlanoList() {
   const navigate = useNavigate();
@@ -47,13 +67,23 @@ export default function PmoPlanoList() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isSmallMobile = useMediaQuery("(max-width: 400px)");
-
-  const { data: planos, isLoading, error: loadError } = usePlanos();
+  
+  // Obter o contexto do layout
+  const { selectedEmpresaId, isSuperAdmin, empresas } = useOutletContext<OutletContextType>();
+  
+  // Buscar dados baseado na seleção
+  const { data: allPlanos, isLoading: allLoading, error: allError } = usePlanos();
+  const { data: filteredPlanos, isLoading: filteredLoading, error: filteredError } = usePlanosPorEmpresa(selectedEmpresaId);
   const { mutate: excluir, isPending: deleting } = useExcluirPlano();
   
   const [dialogOpen, setDialogOpen] = useState(false);
   const [planoToDelete, setPlanoToDelete] = useState<PmoPlanoResponse | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  
+  // Determinar qual dados usar
+  const isLoading = isSuperAdmin && selectedEmpresaId ? filteredLoading : allLoading;
+  const error = isSuperAdmin && selectedEmpresaId ? filteredError : allError;
+  const planos = isSuperAdmin && selectedEmpresaId ? filteredPlanos : allPlanos;
 
   const openDeleteDialog = (plano: PmoPlanoResponse) => {
     setPlanoToDelete(plano);
@@ -75,6 +105,9 @@ export default function PmoPlanoList() {
     setExpandedCard(expandedCard === planoId ? null : planoId);
   };
 
+  // Nome da empresa selecionada
+  const selectedEmpresaNome = empresas?.find(e => e.id === selectedEmpresaId)?.nome;
+
   if (isLoading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh" }}>
@@ -83,7 +116,7 @@ export default function PmoPlanoList() {
     );
   }
 
-  // Cabecalho responsivo
+  // Cabeçalho responsivo
   const Header = () => (
     <Stack 
       direction={{ xs: "column", sm: "row" }} 
@@ -92,14 +125,21 @@ export default function PmoPlanoList() {
       spacing={2}
       sx={{ mb: 2, width: "100%" }}
     >
-      <Typography 
-        variant="h5" 
-        component="h1" 
-        fontWeight="bold"
-        fontSize={isMobile ? "1.2rem" : "1.5rem"}
-      >
-        Planos de Manejo Organico (PMO)
-      </Typography>
+      <Box>
+        <Typography 
+          variant="h5" 
+          component="h1" 
+          fontWeight="bold"
+          fontSize={isMobile ? "1.2rem" : "1.5rem"}
+        >
+          Planos de Manejo Orgânico (PMO)
+        </Typography>
+        {isSuperAdmin && selectedEmpresaId && (
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+            <BusinessIcon fontSize="small" /> Filtrando por empresa: {selectedEmpresaNome}
+          </Typography>
+        )}
+      </Box>
       <Button 
         variant="contained" 
         startIcon={<AddIcon />} 
@@ -113,6 +153,37 @@ export default function PmoPlanoList() {
     </Stack>
   );
 
+  // Indicador de filtro
+  const FilterIndicator = () => {
+    if (!isSuperAdmin) return null;
+    if (selectedEmpresaId) {
+      return (
+        <Alert 
+          severity="info" 
+          sx={{ mb: 2, borderRadius: 2 }}
+          action={
+            <Button 
+              color="inherit" 
+              size="small" 
+              onClick={() => {
+                localStorage.removeItem('selectedEmpresaId');
+                window.location.reload();
+              }}
+            >
+              Limpar filtro
+            </Button>
+          }
+        >
+          <Box display="flex" alignItems="center" gap={1}>
+            <BusinessIcon fontSize="small" />
+            <strong>Visualizando planos apenas da empresa:</strong> {selectedEmpresaNome}
+          </Box>
+        </Alert>
+      );
+    }
+    return null;
+  };
+
   // Layout para desktop (tabela)
   const DesktopTable = () => (
     <TableContainer component={Paper} sx={{ overflowX: "auto", width: "100%" }}>
@@ -122,9 +193,9 @@ export default function PmoPlanoList() {
             <TableCell>ID</TableCell>
             <TableCell>Tipo</TableCell>
             <TableCell>Escopo</TableCell>
-            <TableCell>Municipio/UF</TableCell>
-            <TableCell>Responsavel</TableCell>
-            <TableCell align="center">Acoes</TableCell>
+            <TableCell>Município/UF</TableCell>
+            <TableCell>Responsável</TableCell>
+            <TableCell align="center">Ações</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -169,11 +240,8 @@ export default function PmoPlanoList() {
     </TableContainer>
   );
 
-  // Layout para mobile (cards expansivos - mesma largura do botao)
+  // Layout para mobile (cards expansivos)
   const CardList = () => {
-    // Calcula a largura disponivel
-    const cardWidth = isSmallMobile ? "100%" : "100%";
-    
     return (
       <Box sx={{ width: "100%" }}>
         <Grid container spacing={1.5}>
@@ -231,7 +299,7 @@ export default function PmoPlanoList() {
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                               <Person fontSize="small" sx={{ fontSize: "0.9rem", color: "text.secondary" }} />
                               <Typography variant="body2" color="text.secondary" fontSize={isSmallMobile ? "0.7rem" : "0.75rem"}>
-                                Responsavel: {plano.responsavelNome}
+                                Responsável: {plano.responsavelNome}
                               </Typography>
                             </Box>
                           )}
@@ -275,10 +343,12 @@ export default function PmoPlanoList() {
     <Paper sx={{ p: { xs: 3, sm: 4 }, textAlign: "center", width: "100%" }}>
       <Agriculture sx={{ fontSize: { xs: 48, sm: 64 }, color: "text.secondary", mb: 2 }} />
       <Typography variant="h6" color="text.secondary" fontSize={isMobile ? "1rem" : "1.25rem"}>
-        Nenhum plano cadastrado
+        {isSuperAdmin && selectedEmpresaId 
+          ? `Nenhum plano encontrado para a empresa ${selectedEmpresaNome}` 
+          : "Nenhum plano cadastrado"}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }} fontSize={isMobile ? "0.75rem" : "0.875rem"}>
-        Clique em "Novo Plano" para comecar.
+        Clique em "Novo Plano" para começar.
       </Typography>
       <Button variant="contained" onClick={() => navigate("/pmo/planos/novo")} size={isMobile ? "small" : "medium"}>
         Criar primeiro plano
@@ -286,11 +356,11 @@ export default function PmoPlanoList() {
     </Paper>
   );
 
-  const error = loadError ? "Erro ao carregar planos." : null;
-
   return (
     <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
       <Header />
+      
+      <FilterIndicator />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
@@ -306,7 +376,7 @@ export default function PmoPlanoList() {
         </>
       )}
 
-      {/* Dialogo de confirmacao */}
+      {/* Dialog de confirmação */}
       <Dialog 
         open={dialogOpen} 
         onClose={closeDeleteDialog}
@@ -314,14 +384,14 @@ export default function PmoPlanoList() {
         fullWidth
       >
         <DialogTitle sx={{ bgcolor: theme.palette.error.light, color: "white", py: 1.5 }}>
-          Confirmar exclusao
+          Confirmar exclusão
         </DialogTitle>
         <DialogContent sx={{ mt: 2 }}>
           <DialogContentText fontSize={isMobile ? "0.8rem" : "0.875rem"}>
             Tem certeza que deseja excluir o plano <strong>#{planoToDelete?.id}</strong>?
             <br />
             <br />
-            <strong style={{ color: theme.palette.error.main }}>Atencao:</strong> Todas as versões e dados relacionados serao removidos permanentemente. Esta acao nao pode ser desfeita.
+            <strong style={{ color: theme.palette.error.main }}>Atenção:</strong> Todas as versões e dados relacionados serão removidos permanentemente. Esta ação não pode ser desfeita.
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>

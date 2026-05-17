@@ -1,5 +1,6 @@
+// src/pages/dashboard/DashboardHome.tsx
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   Box,
   Card,
@@ -13,7 +14,6 @@ import {
   useMediaQuery,
   useTheme,
   Collapse,
-  Grid,
   Chip,
   Tooltip,
   Stack,
@@ -44,9 +44,25 @@ import {
   Build as BuildIcon,
   SupportAgent as SupportAgentIcon,
 } from "@mui/icons-material";
-import { listarPlanosDaPropriedade, buscarUltimoPlano, buscarVersaoAtiva, type PmoPlanoResponse, type PmoVersaoResponse } from "../../api/pmo.api";
+import { 
+  listarPlanosPorEmpresa, 
+  listarMeusPlanos, 
+  buscarUltimoPlano, 
+  buscarVersaoAtiva, 
+  type PmoPlanoResponse, 
+  type PmoVersaoResponse 
+} from "../../api/pmo.api";
 import { useAuth } from "../../auth/AuthContext";
 import { gerarRelatorioPDF } from "../../utils/pdfGenerator";
+
+// Interface para o contexto do layout
+interface OutletContextType {
+  selectedEmpresaId: number | null;
+  empresas: any[];
+  isSuperAdmin: boolean;
+  userEmpresaId?: number;
+  userEmpresaNome?: string;
+}
 
 // Definição dos cards principais (categorias)
 const MAIN_CARDS = [
@@ -148,6 +164,17 @@ export default function DashboardHome() {
   const { email } = useAuth();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isSmallMobile = useMediaQuery("(max-width: 400px)");
+  
+  // Obter o contexto do layout
+  const context = useOutletContext<OutletContextType>();
+  
+  // CORREÇÃO: Garantir que selectedEmpresaId seja um número ou null
+  const selectedEmpresaId = context?.selectedEmpresaId && typeof context.selectedEmpresaId === 'number' 
+    ? context.selectedEmpresaId 
+    : null;
+  const isSuperAdmin = context?.isSuperAdmin ?? false;
+  const empresas = context?.empresas ?? [];
+  const userEmpresaId = context?.userEmpresaId;
 
   const [loading, setLoading] = useState(true);
   const [plano, setPlano] = useState<PmoPlanoResponse | null>(null);
@@ -159,13 +186,51 @@ export default function DashboardHome() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedEmpresaId]);
 
   async function loadData() {
     setLoading(true);
     setError(null);
     try {
-      const planoData = await buscarUltimoPlano();
+      let planos: PmoPlanoResponse[] = [];
+      let planoData: PmoPlanoResponse | null = null;
+      
+      console.log("=== DashboardHome - loadData ===");
+      console.log("selectedEmpresaId:", selectedEmpresaId, "tipo:", typeof selectedEmpresaId);
+      console.log("isSuperAdmin:", isSuperAdmin);
+      console.log("userEmpresaId:", userEmpresaId);
+      
+      if (isSuperAdmin && selectedEmpresaId) {
+        // Super Admin filtrando por empresa
+        console.log("Buscando planos por empresa:", selectedEmpresaId);
+        planos = await listarPlanosPorEmpresa(selectedEmpresaId);
+        planoData = planos.length > 0 ? planos[0] : null;
+      } else if (isSuperAdmin && !selectedEmpresaId) {
+        // Super Admin sem filtro
+        console.log("Buscando último plano (Super Admin)");
+        try {
+          planoData = await buscarUltimoPlano();
+        } catch (err) {
+          console.log("Nenhum plano encontrado");
+        }
+      } else {
+        // Usuário comum - buscar seus próprios planos
+        console.log("Buscando meus planos (usuário comum)");
+        try {
+          planos = await listarMeusPlanos();
+          planoData = planos.length > 0 ? planos[0] : null;
+        } catch (err: any) {
+          console.error("Erro ao buscar meus planos:", err);
+          // Fallback: buscar último plano
+          try {
+            planoData = await buscarUltimoPlano();
+          } catch (e) {
+            console.log("Nenhum plano encontrado");
+          }
+        }
+      }
+      
+      console.log("planoData encontrado:", planoData);
       setPlano(planoData);
       
       if (planoData && planoData.id) {
@@ -183,8 +248,9 @@ export default function DashboardHome() {
         status: "pending" as const,
       }));
       setSubCardStatus(statuses);
+      
     } catch (err: any) {
-      console.error(err);
+      console.error("Erro no loadData:", err);
       if (err.response?.status === 404) {
         setError("Nenhum plano encontrado. Crie seu primeiro plano!");
       } else {
@@ -266,6 +332,9 @@ export default function DashboardHome() {
 
   const { completed, total, percentage } = getStatusCount();
 
+  // Nome da empresa selecionada
+  const selectedEmpresaNome = empresas?.find(e => e.id === selectedEmpresaId)?.nome;
+
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "50vh", p: 2 }}>
@@ -280,7 +349,25 @@ export default function DashboardHome() {
       maxWidth: "100%",
       overflowX: "hidden"
     }}>
-      {/* Cabeçalho - Versão simplificada e alinhada */}
+      {/* Indicador de filtro ativo */}
+      {isSuperAdmin && selectedEmpresaId && (
+        <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+          <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+            <strong>Visualizando dados apenas da empresa:</strong> {selectedEmpresaNome}
+            <Chip 
+              label="Limpar filtro" 
+              size="small" 
+              onClick={() => {
+                localStorage.removeItem('selectedEmpresaId');
+                window.location.reload();
+              }} 
+              sx={{ ml: 'auto', cursor: 'pointer' }}
+            />
+          </Box>
+        </Alert>
+      )}
+
+      {/* Cabeçalho */}
       <Box sx={{ mb: 3 }}>
         <Box sx={{ 
           display: "flex", 
@@ -320,10 +407,7 @@ export default function DashboardHome() {
             </Tooltip>
           )}
         </Box>
-        <Typography 
-          variant="body2" 
-          color="text.secondary"
-        >
+        <Typography variant="body2" color="text.secondary">
           Gerencie seu Plano de Manejo Orgânico
         </Typography>
       </Box>
@@ -491,7 +575,7 @@ export default function DashboardHome() {
               {/* SubCards */}
               <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                 <Stack spacing={1} sx={{ mt: 1, pl: { xs: 0.5, sm: 1 }, pr: { xs: 0.5, sm: 1 } }}>
-                  {subCardsWithStatus.map((subCard, index) => (
+                  {subCardsWithStatus.map((subCard) => (
                     <Card 
                       key={subCard.id}
                       sx={{ 

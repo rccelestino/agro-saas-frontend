@@ -1,3 +1,4 @@
+// src/api/pmoRelatorio.api.ts
 import { api } from "./axios";
 
 export type PmoRelatorioCompleto = {
@@ -40,25 +41,25 @@ export type PmoRelatorioSintetico = {
   canaisVenda: string;
 };
 
-// CORRIGIDO: Usar a URL exata do backend
+// CORRIGIDO: Usar /pmo/relatorio (sem 's', sem /api)
 export async function getRelatorioCompleto(planoId: number, versaoId: number) {
   const { data } = await api.get<PmoRelatorioCompleto>(
-    `/api/pmo/relatorio/completo?planoId=${planoId}&versaoId=${versaoId}`
+    `/pmo/relatorio/completo?planoId=${planoId}&versaoId=${versaoId}`
   );
   return data;
 }
 
-// CORRIGIDO: Usar a URL exata do backend
+// CORRIGIDO: Usar /pmo/relatorio (sem 's', sem /api)
 export async function getRelatorioSintetico(planoId: number, versaoId: number) {
   const { data } = await api.get<PmoRelatorioSintetico>(
-    `/api/pmo/relatorio/sintetico?planoId=${planoId}&versaoId=${versaoId}`
+    `/pmo/relatorio/sintetico?planoId=${planoId}&versaoId=${versaoId}`
   );
   return data;
 }
 
 // Endpoint de teste
 export async function testarRelatorio() {
-  const { data } = await api.get(`/api/pmo/relatorio/teste`);
+  const { data } = await api.get(`/pmo/relatorio/teste`);
   return data;
 }
 
@@ -68,6 +69,6 @@ export async function listarPlanosParaRelatorio() {
 }
 
 export async function listarVersoesParaRelatorio(planoId: number) {
-  const { data } = await api.get<any[]>(`/pmo/planos/${planoId}/versoes`);
+  const { data } = await api.get<any[]>(`/pmo/versoes/plano/${planoId}`);
   return data;
 }

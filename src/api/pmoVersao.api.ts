@@ -1,3 +1,4 @@
+// src/api/pmoVersao.api.ts
 import { api } from "./axios";
 
 // ========== Types ==========
@@ -13,7 +14,7 @@ export type PmoVersaoResponse = {
   assinaturaFornecedorUri: string | null;
   assinaturaCoordenadorUri: string | null;
   dataAprovacao: string | null;
-  roteiroAcesso?: string | null;  // NOVO CAMPO OPCIONAL
+  roteiroAcesso?: string | null;
 };
 
 export type PmoVersaoAprovacaoResponse = {
@@ -33,39 +34,49 @@ export type PmoVersaoAprovacaoRequest = {
 
 // ========== API Functions ==========
 
+// CORRIGIDO: Endpoint correto para listar versões
 export async function listarVersoes(planoId: number) {
-  const { data } = await api.get<PmoVersaoResponse[]>(`/pmo/planos/${planoId}/versoes`);
+  console.log("🔍 listarVersoes - planoId:", planoId);
+  const { data } = await api.get<PmoVersaoResponse[]>(`/pmo/versoes/plano/${planoId}`);
+  console.log("📦 Versões recebidas:", data);
   return data;
 }
 
+// CORRIGIDO: Endpoint correto para criar versão
 export async function criarVersao(planoId: number) {
-  const { data } = await api.post<PmoVersaoResponse>(`/pmo/planos/${planoId}/versoes`);
+  console.log("📝 criarVersao - planoId:", planoId);
+  const { data } = await api.post<PmoVersaoResponse>(`/pmo/versoes/plano/${planoId}/nova`);
+  console.log("✅ Nova versão criada:", data);
   return data;
 }
 
+// CORRIGIDO: Endpoint para buscar status da declaração
 export async function getDeclaracaoStatus(versaoId: number) {
   const { data } = await api.get<PmoVersaoAprovacaoResponse>(
-    `/pmo/planos/0/versoes/${versaoId}/declaracao`
+    `/pmo/versoes/${versaoId}/declaracao-status`
   );
   return data;
 }
 
+// CORRIGIDO: Endpoint para aprovar versão
 export async function aprovarVersao(versaoId: number, payload: PmoVersaoAprovacaoRequest) {
   const { data } = await api.post<PmoVersaoAprovacaoResponse>(
-    `/pmo/planos/0/versoes/${versaoId}/aprovar`,
+    `/pmo/versoes/${versaoId}/aprovar`,
     payload
   );
   return data;
 }
 
-// ========== Roteiro de Acesso ==========
-// CORRIGIDO: Adicionado planoId na URL
-export async function getRoteiroAcesso(planoId: number, versaoId: number) {
-  const { data } = await api.get<string>(`/pmo/planos/${planoId}/versoes/${versaoId}/roteiro-acesso`);
+// CORRIGIDO: Endpoint para buscar roteiro de acesso
+export async function getRoteiroAcesso(versaoId: number) {
+  const { data } = await api.get<string>(`/pmo/versoes/${versaoId}/roteiro-acesso`);
   return data;
 }
 
-export async function updateRoteiroAcesso(planoId: number, versaoId: number, roteiroAcesso: string) {
-  const { data } = await api.put(`/pmo/planos/${planoId}/versoes/${versaoId}/roteiro-acesso`, { roteiroAcesso });
+// CORRIGIDO: Endpoint para atualizar roteiro de acesso
+export async function updateRoteiroAcesso(versaoId: number, roteiroAcesso: string) {
+  const { data } = await api.put(`/pmo/versoes/${versaoId}/roteiro-acesso`, roteiroAcesso, {
+    headers: { 'Content-Type': 'text/plain' }
+  });
   return data;
 }

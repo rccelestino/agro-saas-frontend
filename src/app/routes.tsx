@@ -1,3 +1,4 @@
+// src/app/routes.tsx
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { CircularProgress, Box } from "@mui/material";
@@ -12,7 +13,9 @@ import ResetPasswordPage from "../pages/login/ResetPasswordPage";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 
-// Lazy loading das páginas protegidas
+// =====================================================
+// MÓDULOS EXISTENTES (PMO, PESSOAS, RELATÓRIOS)
+// =====================================================
 const DashboardHome = lazy(() => import("../pages/dashboard/DashboardHome"));
 const PessoaList = lazy(() => import("../pages/pessoas/PessoaList"));
 const PessoaForm = lazy(() => import("../pages/pessoas/PessoaForm"));
@@ -30,15 +33,7 @@ const PmoSoloPage = lazy(() => import("../pages/pmo/PmoSoloPage"));
 const PmoStatusOrganicoPage = lazy(() => import("../pages/pmo/PmoStatusOrganicoPage"));
 const PmoMateriaOrganicaPage = lazy(() => import("../pages/pmo/PmoMateriaOrganicaPage"));
 const PmoAnimaisPage = lazy(() => import("../pages/pmo/PmoAnimaisPage"));
-
-// ATUALIZADO: Novo caminho para Cultivos (pasta cultivos com index.tsx)
-const PmoCultivosPage = lazy(() => 
-  import("../pages/pmo/cultivos").catch(err => {
-    console.error("Erro ao carregar PmoCultivosPage:", err);
-    return { default: () => <Box sx={{ p: 4, textAlign: "center" }}>Erro ao carregar página</Box> };
-  })
-);
-
+const PmoCultivosPage = lazy(() => import("../pages/pmo/cultivos"));
 const PmoSementesPage = lazy(() => import("../pages/pmo/PmoSementesPage"));
 const PmoEstruturasPage = lazy(() => import("../pages/pmo/PmoEstruturasPage"));
 const PmoComercializacaoPage = lazy(() => import("../pages/pmo/PmoComercializacaoPage"));
@@ -53,9 +48,27 @@ const PmoControlesPropriedadePage = lazy(() => import("../pages/pmo/PmoControles
 const PmoFerramentasPage = lazy(() => import("../pages/pmo/PmoFerramentasPage"));
 const PmoAssistenciaTecnicaPage = lazy(() => import("../pages/pmo/PmoAssistenciaTecnicaPage"));
 const RelatoriosPage = lazy(() => import("../pages/relatorios/RelatoriosPage"));
-
 const SuperAdminDashboard = lazy(() => import("../pages/admin/SuperAdminDashboard"));
 
+// =====================================================
+// NOVOS MÓDULOS INTELIGENTES
+// =====================================================
+const FonteAguaList = lazy(() => import("../modules/agua/FonteAguaList"));
+const SoloList = lazy(() => import("../modules/solo-biodiversidade/SoloList"));
+const BiodiversidadeList = lazy(() => import("../modules/solo-biodiversidade/BiodiversidadeList"));
+const NonConformitiesList = lazy(() => import("../modules/conformidade/NonConformitiesList"));
+
+// =====================================================
+// MELHORIA 1: DOCUMENT INTELLIGENCE
+// =====================================================
+const PmoImportacaoPage = lazy(() => import("../pages/pmo/PmoImportacaoPage"));
+
+// =====================================================
+// MELHORIA 2: CADERNO DE CAMPO DIGITAL
+// =====================================================
+const CadernoCampoPage = lazy(() => import("../pages/campo/CadernoCampoPage"));
+const NovaAtividadePage = lazy(() => import("../pages/campo/NovaAtividadePage"));
+const TalhoesPage = lazy(() => import("../pages/campo/TalhoesPage"));
 
 // Componente de loading
 const PageLoader = () => (
@@ -67,13 +80,13 @@ const PageLoader = () => (
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Rotas públicas (sem autenticação) */}
+      {/* Rotas públicas */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-      {/* Rotas protegidas (requer autenticação) */}
+      {/* Rotas protegidas */}
       <Route
         path="/"
         element={
@@ -82,23 +95,47 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        {/* Admin */}
         <Route path="admin" element={
           <Suspense fallback={<PageLoader />}>
             <SuperAdminDashboard />
           </Suspense>
         } />
 
-        {/* Home - Dashboard principal */}
+        {/* Home - Dashboard */}
         <Route index element={
           <Suspense fallback={<PageLoader />}>
             <DashboardHome />
           </Suspense>
         } />
         
-        {/* Redirecionar /dashboard para / (evita conteúdo em branco) */}
         <Route path="dashboard" element={<Navigate to="/" replace />} />
 
-        {/* Relatórios */}
+        {/* NOVOS MÓDULOS */}
+        <Route path="agua" element={
+          <Suspense fallback={<PageLoader />}>
+            <FonteAguaList />
+          </Suspense>
+        } />
+
+        <Route path="solo" element={
+          <Suspense fallback={<PageLoader />}>
+            <SoloList />
+          </Suspense>
+        } />
+
+        <Route path="biodiversidade" element={
+          <Suspense fallback={<PageLoader />}>
+            <BiodiversidadeList />
+          </Suspense>
+        } />
+
+        <Route path="conformidade" element={
+          <Suspense fallback={<PageLoader />}>
+            <NonConformitiesList />
+          </Suspense>
+        } />
+
         <Route path="relatorios" element={
           <Suspense fallback={<PageLoader />}>
             <RelatoriosPage />
@@ -134,6 +171,36 @@ export default function AppRoutes() {
         <Route path="pmo/planos/novo" element={
           <Suspense fallback={<PageLoader />}>
             <PmoPlanoNovoPage />
+          </Suspense>
+        } />
+
+        {/* ===================================================== */}
+        {/* MELHORIA 1: IMPORTAR DOCUMENTO */}
+        {/* ===================================================== */}
+        <Route path="pmo/importar" element={
+          <Suspense fallback={<PageLoader />}>
+            <PmoImportacaoPage />
+          </Suspense>
+        } />
+
+        {/* ===================================================== */}
+        {/* MELHORIA 2: CADERNO DE CAMPO DIGITAL */}
+        {/* ===================================================== */}
+        <Route path="caderno-campo" element={
+          <Suspense fallback={<PageLoader />}>
+            <CadernoCampoPage />
+          </Suspense>
+        } />
+
+        <Route path="caderno-campo/nova" element={
+          <Suspense fallback={<PageLoader />}>
+            <NovaAtividadePage />
+          </Suspense>
+        } />
+
+        <Route path="talhoes" element={
+          <Suspense fallback={<PageLoader />}>
+            <TalhoesPage />
           </Suspense>
         } />
 
@@ -272,7 +339,6 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      {/* Rota para rotas não encontradas */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

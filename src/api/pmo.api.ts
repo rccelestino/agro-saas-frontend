@@ -11,6 +11,55 @@ export * from "./pmoComercializacao.api";
 export * from "./pmoVersao.api";
 export * from "./pmoBiodiversidade.api";
 
+// =====================================================
+// TIPOS PARA DOCUMENT INTELLIGENCE (MELHORIA 1)
+// =====================================================
+
+export interface DocumentUploadResponse {
+  pmoPlanoId: number;
+  pmoVersaoId: number;
+  status: string;
+  confidenceScore: number;
+  warnings: string[];
+  missingFields: string[];
+  analise: AnaliseInteligenteResponse | null;
+}
+
+export interface AnaliseInteligenteResponse {
+  scoreTotal: number;
+  scoreAgua: number;
+  scoreSolo: number;
+  scoreBiodiversidade: number;
+  scoreResiduos: number;
+  scoreComercializacao: number;
+  scoreSustentabilidade: number;
+  classificacao: 'INICIANTE' | 'EM_DESENVOLVIMENTO' | 'AVANCADO' | 'EXEMPLAR';
+  gaps: GapRecomendacao[];
+  recomendacoes: Recomendacao[];
+  percentilGeral: number;
+  selosSugeridos: string[];
+}
+
+export interface GapRecomendacao {
+  campo: string;
+  criticidade: 'BAIXA' | 'MEDIA' | 'ALTA';
+  recomendacao: string;
+  impactoEsperado: string;
+  prazoDias: number;
+}
+
+export interface Recomendacao {
+  titulo: string;
+  descricao: string;
+  prioridade: 'BAIXA' | 'MEDIA' | 'ALTA';
+  prazoDias: number;
+  categoria: string;
+}
+
+// =====================================================
+// FUNÇÕES EXISTENTES
+// =====================================================
+
 // CORREÇÃO: Função para validar ID
 const validarId = (id: any): number | null => {
   if (typeof id === 'number' && !isNaN(id)) {
@@ -177,3 +226,66 @@ export async function listarPlanos(): Promise<PmoPlanoResponse[]> {
   const response = await api.get('/pmo/planos');
   return response.data;
 }
+
+// =====================================================
+// MELHORIA 1: DOCUMENT INTELLIGENCE
+// =====================================================
+
+/**
+ * Importar documento (PDF/Word/Imagem) e criar PMO automaticamente, usando LlamaParse (back-end)
+ */
+export const importarDocumento = async (formData: FormData): Promise<DocumentUploadResponse> => {
+  const response = await api.post('/pmo/importar-documento', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    timeout: 180000, // 3 minutos para o LlamaParse processar
+  });
+  return response.data;
+};
+
+/**
+ * Buscar análise inteligente de um PMO
+ */
+export const getAnaliseInteligente = async (pmoPlanoId: number): Promise<AnaliseInteligenteResponse> => {
+  const idValido = validarId(pmoPlanoId);
+  if (!idValido) {
+    throw new Error("ID inválido para getAnaliseInteligente");
+  }
+  const response = await api.get(`/pmo/${idValido}/analise`);
+  return response.data;
+};
+
+
+/**
+ * Importar planilha Excel
+ */
+export const importarPlanilha = async (formData: FormData): Promise<DocumentUploadResponse> => {
+  const response = await api.post('/pmo/importar-planilha', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    timeout: 60000,
+  });
+  return response.data;
+};
+
+
+/**
+ * Recalcular análise de um PMO
+ */
+export const recalcularAnalise = async (pmoPlanoId: number, versaoId: number): Promise<AnaliseInteligenteResponse> => {
+  const idPlanoValido = validarId(pmoPlanoId);
+  const idVersaoValido = validarId(versaoId);
+  if (!idPlanoValido || !idVersaoValido) {
+    throw new Error("IDs inválidos para recalcularAnalise");
+  }
+  const response = await api.post(`/pmo/${idPlanoValido}/versao/${idVersaoValido}/recalcular-analise`);
+  return response.data;
+};
+
+// =====================================================
+// EXPORTAÇÃO ADICIONAL PARA GARANTIR
+// =====================================================
+
+export { importarDocumento as default };

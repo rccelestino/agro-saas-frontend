@@ -17,7 +17,7 @@ import {
   Alert,
 } from '@mui/material';
 import { soloService } from '../services/solo.service';
-import { Solo } from '../types/solo.types';
+import type { Solo, SoloRequest } from "../types/solo.types";
 
 const tiposSolo = [
   { value: 'ARGILOSO', label: 'Argiloso' },

@@ -27,7 +27,8 @@ import {
   StepLabel,
 } from '@mui/material';
 import { Add, Delete, CheckCircle, Upload } from '@mui/icons-material';
-import { NaoConformidade, PlanoAcao, Evidencia, conformidadeApi } from '../services/conformidade.api';
+import { conformidadeApi, type NaoConformidade, type PlanoAcao, type Evidencia } from "../services/conformidade.api";
+
 
 const criticidadeColors = {
   BAIXA: '#4caf50',

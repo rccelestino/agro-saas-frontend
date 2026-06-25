@@ -1,258 +1,203 @@
 // src/modules/solo-biodiversidade/BiodiversidadeList.tsx
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Paper,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Chip,
-  Alert,
-  CircularProgress,
   Card,
   CardContent,
+  CardActions,
+  Chip,
+  IconButton,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
-import { Add, Edit, Delete, Park } from '@mui/icons-material';
-import { useOutletContext } from 'react-router-dom';
-import { useAuth } from '../../auth/AuthContext';
-import { Biodiversidade, soloBiodiversidadeApi } from './services/solo-biodiversidade.api';
-import { BiodiversidadeForm } from './components/BiodiversidadeForm';
+  Alert,
+  CircularProgress,
+  Divider,
+  Stack,
+  Tooltip,
+  useTheme,
+  alpha,
+} from "@mui/material";
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  Park as ParkIcon,
+  Grass as GrassIcon,
+} from "@mui/icons-material";
+import { useAuth } from "../../auth/AuthContext";
+import { soloBiodiversidadeApi, type Biodiversidade } from "./services/solo-biodiversidade.api";
 
-interface OutletContext {
-  selectedEmpresaId: number | null;
-  empresas: any[];
-  isSuperAdmin: boolean;
-  userEmpresaId: number | null;
-  userEmpresaNome: string | null;
-}
-
-export const BiodiversidadeList: React.FC = () => {
-  const { user } = useAuth();
-  const outletContext = useOutletContext<OutletContext>();
+export default function BiodiversidadeList() {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const { propriedadeAtual } = useAuth();
+  
+  const [items, setItems] = useState<Biodiversidade[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [biodiversidades, setBiodiversidades] = useState<Biodiversidade[]>([]);
-  const [propriedades, setPropriedades] = useState<any[]>([]);
-  const [selectedPropriedadeId, setSelectedPropriedadeId] = useState<string>('');
-  const [openForm, setOpenForm] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Biodiversidade | undefined>();
-
-  // Determinar qual empresa usar
-  const getEmpresaId = () => {
-    if (outletContext?.isSuperAdmin && outletContext?.selectedEmpresaId) {
-      return outletContext.selectedEmpresaId;
-    }
-    return user?.empresaId || 1;
-  };
-
-  // Buscar propriedades da empresa selecionada
-  const carregarPropriedades = async () => {
-    const empresaId = getEmpresaId();
-    console.log('Carregando propriedades para empresa:', empresaId);
-    setPropriedades([
-      { id: '1', nome: 'Fazenda Boa Vista' },
-      { id: '2', nome: 'Sítio São João' },
-      { id: '3', nome: 'Fazenda Santa Maria' },
-    ]);
-    if (propriedades.length > 0 && !selectedPropriedadeId) {
-      setSelectedPropriedadeId(propriedades[0].id);
-    }
-  };
 
   useEffect(() => {
-    carregarPropriedades();
-  }, [outletContext?.selectedEmpresaId]);
+    if (propriedadeAtual?.id) {
+      carregarDados(propriedadeAtual.id);
+    }
+  }, [propriedadeAtual]);
 
-  const loadData = async () => {
-    if (!selectedPropriedadeId) return;
-    
+  const carregarDados = async (propriedadeId: string) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      const response = await soloBiodiversidadeApi.listarBiodiversidade(selectedPropriedadeId);
-      setBiodiversidades(response.data);
-      setError(null);
+      const data = await soloBiodiversidadeApi.listarBiodiversidade(propriedadeId);
+      setItems(data || []);
     } catch (err) {
+      console.error('Erro ao carregar biodiversidade:', err);
       setError('Erro ao carregar dados de biodiversidade');
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (selectedPropriedadeId) {
-      loadData();
-    }
-  }, [selectedPropriedadeId]);
-
   const handleDelete = async (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir este registro de biodiversidade?')) {
-      try {
-        await soloBiodiversidadeApi.excluirBiodiversidade(id);
-        await loadData();
-      } catch (err) {
-        setError('Erro ao excluir');
-      }
+    if (!window.confirm('Tem certeza que deseja excluir este registro?')) return;
+    try {
+      await soloBiodiversidadeApi.deletarBiodiversidade(id);
+      if (propriedadeAtual?.id) carregarDados(propriedadeAtual.id);
+    } catch (err) {
+      console.error('Erro ao excluir:', err);
+      setError('Erro ao excluir registro');
     }
   };
 
-  if (loading && !biodiversidades.length) {
+  if (!propriedadeAtual) {
     return (
-      <Box display="flex" justifyContent="center" p={4}>
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="h5" gutterBottom>🏠 Nenhuma propriedade selecionada</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Selecione uma propriedade para visualizar os dados de biodiversidade.
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Carregando dados de biodiversidade...</Typography>
       </Box>
     );
   }
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" fontWeight="bold">
-          Gestão de Biodiversidade
-        </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+      {/* Cabeçalho */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold" color="primary.main">
+            🌿 Biodiversidade
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {propriedadeAtual?.nome} • {items.length} registro(s)
+          </Typography>
+        </Box>
         <Button
           variant="contained"
-          startIcon={<Add />}
-          onClick={() => {
-            setSelectedItem(undefined);
-            setOpenForm(true);
-          }}
-          disabled={!selectedPropriedadeId}
+          startIcon={<AddIcon />}
+          onClick={() => navigate('/biodiversidade/novo')}
+          sx={{ borderRadius: 2 }}
         >
-          Novo Registro
+          Nova Biodiversidade
         </Button>
       </Box>
 
-      {/* Selector de Propriedade */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Propriedade</InputLabel>
-              <Select
-                value={selectedPropriedadeId}
-                label="Propriedade"
-                onChange={(e) => setSelectedPropriedadeId(e.target.value)}
-              >
-                {propriedades.map(p => (
-                  <MenuItem key={p.id} value={p.id}>{p.nome}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      </Paper>
-
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
-      {biodiversidades.length === 0 ? (
-        <Card variant="outlined">
-          <CardContent sx={{ textAlign: 'center', py: 4 }}>
-            <Park sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-            <Typography variant="body2" color="text.secondary">
-              Nenhum registro de biodiversidade cadastrado
-            </Typography>
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => setOpenForm(true)}
-              sx={{ mt: 1 }}
-            >
-              Cadastrar primeiro registro
-            </Button>
-          </CardContent>
-        </Card>
+      {/* Lista */}
+      {items.length === 0 ? (
+        <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 2 }}>
+          <Typography variant="h5" sx={{ fontSize: '3rem', mb: 2 }}>🌿</Typography>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Nenhum registro de biodiversidade
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Registre informações sobre a biodiversidade da propriedade
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/biodiversidade/novo')}
+            sx={{ borderRadius: 2 }}
+          >
+            Novo Registro
+          </Button>
+        </Paper>
       ) : (
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#f5f5f5' }}>
-                <TableCell>Reserva Legal</TableCell>
-                <TableCell>APP</TableCell>
-                <TableCell>Espécies Nativas</TableCell>
-                <TableCell>Práticas de Conservação</TableCell>
-                <TableCell>Certificação</TableCell>
-                <TableCell align="right">Ações</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {biodiversidades.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
-                    {item.possuiReservaLegal ? (
-                      <Chip label={`${item.areaReservaLegal} ha`} size="small" color="success" />
-                    ) : (
-                      <Chip label="Não possui" size="small" variant="outlined" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {item.possuiApp ? (
-                      <Chip label={`${item.areaApp} ha`} size="small" color="info" />
-                    ) : (
-                      <Chip label="Não possui" size="small" variant="outlined" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.especiesNativas?.substring(0, 50) || '-'}
+        <Grid container spacing={3}>
+          {items.map((item) => (
+            <Grid item xs={12} md={6} lg={4} key={item.id}>
+              <Card sx={{ borderRadius: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                    <Typography variant="h6" fontWeight="bold">
+                      {item.possuiReservaLegal ? '🌳 Com Reserva Legal' : '⚠️ Sem Reserva Legal'}
                     </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.praticasConservacao?.substring(0, 50) || '-'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    {item.certificacaoBiodiversidade ? (
-                      <Chip label="Certificada" size="small" color="success" />
-                    ) : (
-                      <Chip label="Não certificada" size="small" variant="outlined" />
+                    <Chip
+                      label={item.scoreContribuicao > 50 ? '✅ Alto' : '⚠️ Baixo'}
+                      color={item.scoreContribuicao > 50 ? 'success' : 'warning'}
+                      size="small"
+                    />
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Stack spacing={0.5}>
+                    {item.areaReservaLegal > 0 && (
+                      <Typography variant="body2" color="text.secondary">
+                        📐 Reserva Legal: {item.areaReservaLegal} ha
+                      </Typography>
                     )}
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton size="small" onClick={() => {
-                      setSelectedItem(item);
-                      setOpenForm(true);
-                    }}>
-                      <Edit fontSize="small" />
+                    {item.areaApp > 0 && (
+                      <Typography variant="body2" color="text.secondary">
+                        💧 APP: {item.areaApp} ha
+                      </Typography>
+                    )}
+                    {item.especiesNativas && (
+                      <Typography variant="body2" color="text.secondary">
+                        🌱 Espécies Nativas: {item.especiesNativas}
+                      </Typography>
+                    )}
+                    {item.praticasConservacao && (
+                      <Typography variant="body2" color="text.secondary">
+                        ♻️ Práticas: {item.praticasConservacao}
+                      </Typography>
+                    )}
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                      Score: {item.scoreContribuicao} pts
+                    </Typography>
+                  </Stack>
+                </CardContent>
+                <CardActions sx={{ px: 2, pb: 2, pt: 0, justifyContent: 'flex-end' }}>
+                  <Tooltip title="Editar">
+                    <IconButton size="small" color="primary" onClick={() => navigate(`/biodiversidade/editar/${item.id}`)}>
+                      <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" onClick={() => handleDelete(item.id)}>
-                      <Delete fontSize="small" />
+                  </Tooltip>
+                  <Tooltip title="Excluir">
+                    <IconButton size="small" color="error" onClick={() => handleDelete(item.id)}>
+                      <DeleteIcon fontSize="small" />
                     </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                  </Tooltip>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
-
-      <BiodiversidadeForm
-        open={openForm}
-        onClose={() => {
-          setOpenForm(false);
-          setSelectedItem(undefined);
-        }}
-        onSuccess={loadData}
-        initialData={selectedItem}
-        propriedadeId={selectedPropriedadeId}
-      />
     </Box>
   );
-};
-export default BiodiversidadeList;
+}

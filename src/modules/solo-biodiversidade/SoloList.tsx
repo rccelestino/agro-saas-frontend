@@ -1,268 +1,227 @@
 // src/modules/solo-biodiversidade/SoloList.tsx
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Paper,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Chip,
-  Alert,
-  CircularProgress,
   Card,
   CardContent,
+  CardActions,
+  Chip,
+  IconButton,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
-import { Add, Edit, Delete, Science } from '@mui/icons-material';
-import { useOutletContext } from 'react-router-dom';
-import { useAuth } from '../../auth/AuthContext';
-import { Solo, soloBiodiversidadeApi } from './services/solo-biodiversidade.api';
-import { SoloForm } from './components/SoloForm';
+  Alert,
+  CircularProgress,
+  Divider,
+  Stack,
+  Tooltip,
+  useTheme,
+  alpha,
+} from "@mui/material";
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  Science as ScienceIcon,
+} from "@mui/icons-material";
+import { useAuth } from "../../auth/AuthContext";
+import { soloBiodiversidadeApi, type Solo } from "./services/solo-biodiversidade.api";
 
-interface OutletContext {
-  selectedEmpresaId: number | null;
-  empresas: any[];
-  isSuperAdmin: boolean;
-  userEmpresaId: number | null;
-  userEmpresaNome: string | null;
-}
-
-export const SoloList: React.FC = () => {
-  const { user } = useAuth();
-  const outletContext = useOutletContext<OutletContext>();
+export default function SoloList() {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const { propriedadeAtual } = useAuth();
+  
+  const [items, setItems] = useState<Solo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [solos, setSolos] = useState<Solo[]>([]);
-  const [propriedades, setPropriedades] = useState<any[]>([]);
-  const [selectedPropriedadeId, setSelectedPropriedadeId] = useState<string>('');
-  const [openForm, setOpenForm] = useState(false);
-  const [selectedSolo, setSelectedSolo] = useState<Solo | undefined>();
+  const [loaded, setLoaded] = useState(false);
+  const carregandoRef = useRef(false);
 
-  // Determinar qual empresa usar
-  const getEmpresaId = () => {
-    if (outletContext?.isSuperAdmin && outletContext?.selectedEmpresaId) {
-      return outletContext.selectedEmpresaId;
+  const carregarDados = useCallback(async () => {
+    // Evitar múltiplas chamadas simultâneas
+    if (carregandoRef.current) return;
+    
+    if (!propriedadeAtual?.id) {
+      setLoading(false);
+      setItems([]);
+      return;
     }
-    return user?.empresaId || 1;
-  };
 
-  // Buscar propriedades da empresa selecionada
-  const carregarPropriedades = async () => {
-    const empresaId = getEmpresaId();
-    console.log('Carregando propriedades para empresa:', empresaId);
-    // TODO: Implementar busca de propriedades da API real
-    setPropriedades([
-      { id: '1', nome: 'Fazenda Boa Vista' },
-      { id: '2', nome: 'Sítio São João' },
-      { id: '3', nome: 'Fazenda Santa Maria' },
-    ]);
-    if (propriedades.length > 0 && !selectedPropriedadeId) {
-      setSelectedPropriedadeId(propriedades[0].id);
-    }
-  };
-
-  useEffect(() => {
-    carregarPropriedades();
-  }, [outletContext?.selectedEmpresaId]);
-
-  const loadData = async () => {
-    if (!selectedPropriedadeId) return;
+    carregandoRef.current = true;
+    setLoading(true);
+    setError(null);
     
     try {
-      setLoading(true);
-      const response = await soloBiodiversidadeApi.listarSolo(selectedPropriedadeId);
-      setSolos(response.data);
-      setError(null);
+      const data = await soloBiodiversidadeApi.listarSolo(String(propriedadeAtual.id));
+      setItems(data || []);
+      setLoaded(true);
     } catch (err) {
+      console.error('Erro ao carregar solo:', err);
       setError('Erro ao carregar dados do solo');
-      console.error(err);
+      setItems([]);
     } finally {
       setLoading(false);
+      carregandoRef.current = false;
     }
-  };
+  }, [propriedadeAtual?.id]);
 
+  // Carregar apenas quando propriedade mudar
   useEffect(() => {
-    if (selectedPropriedadeId) {
-      loadData();
-    }
-  }, [selectedPropriedadeId]);
+    carregarDados();
+  }, [carregarDados]);
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir esta análise de solo?')) {
-      try {
-        await soloBiodiversidadeApi.excluirSolo(id);
-        await loadData();
-      } catch (err) {
-        setError('Erro ao excluir');
-      }
+    if (!window.confirm('Tem certeza que deseja excluir este registro?')) return;
+    try {
+      await soloBiodiversidadeApi.deletarSolo(id);
+      // Recarregar dados após exclusão
+      carregarDados();
+    } catch (err) {
+      console.error('Erro ao excluir:', err);
+      setError('Erro ao excluir registro');
     }
   };
 
-  const getFertilidadeColor = (fertilidade: string) => {
-    switch (fertilidade) {
-      case 'ALTA': return 'success';
-      case 'MEDIA': return 'warning';
-      default: return 'error';
-    }
-  };
-
-  if (loading && !solos.length) {
+  // Se não tiver propriedade, mostrar mensagem
+  if (!propriedadeAtual) {
     return (
-      <Box display="flex" justifyContent="center" p={4}>
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="h5" gutterBottom>🏠 Nenhuma propriedade selecionada</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Selecione uma propriedade para visualizar os dados do solo.
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Loading
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Carregando dados do solo...</Typography>
       </Box>
     );
   }
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" fontWeight="bold">
-          Análises de Solo
-        </Typography>
+    <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+      {/* Cabeçalho */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold" color="primary.main">
+            🌱 Análise de Solo
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {propriedadeAtual?.nome} • {items.length} registro(s)
+          </Typography>
+        </Box>
         <Button
           variant="contained"
-          startIcon={<Add />}
-          onClick={() => {
-            setSelectedSolo(undefined);
-            setOpenForm(true);
-          }}
-          disabled={!selectedPropriedadeId}
+          startIcon={<AddIcon />}
+          onClick={() => navigate('/solo/novo')}
+          sx={{ borderRadius: 2 }}
         >
-          Nova Análise
+          Novo Solo
         </Button>
       </Box>
 
-      {/* Selector de Propriedade */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Propriedade</InputLabel>
-              <Select
-                value={selectedPropriedadeId}
-                label="Propriedade"
-                onChange={(e) => setSelectedPropriedadeId(e.target.value)}
-              >
-                {propriedades.map(p => (
-                  <MenuItem key={p.id} value={p.id}>{p.nome}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      </Paper>
-
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
-      {solos.length === 0 ? (
-        <Card variant="outlined">
-          <CardContent sx={{ textAlign: 'center', py: 4 }}>
-            <Science sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-            <Typography variant="body2" color="text.secondary">
-              Nenhuma análise de solo cadastrada
-            </Typography>
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => setOpenForm(true)}
-              sx={{ mt: 1 }}
-            >
-              Cadastrar primeira análise
-            </Button>
-          </CardContent>
-        </Card>
+      {/* Lista */}
+      {items.length === 0 ? (
+        <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 2 }}>
+          <Typography variant="h5" sx={{ fontSize: '3rem', mb: 2 }}>🌱</Typography>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Nenhum registro de solo encontrado
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Cadastre uma análise de solo para a propriedade
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/solo/novo')}
+            sx={{ borderRadius: 2 }}
+          >
+            Nova Análise
+          </Button>
+        </Paper>
       ) : (
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow sx={{ bgcolor: '#f5f5f5' }}>
-                <TableCell>Nome</TableCell>
-                <TableCell>Tipo de Solo</TableCell>
-                <TableCell>Fertilidade</TableCell>
-                <TableCell>Análise</TableCell>
-                <TableCell>Erosão</TableCell>
-                <TableCell align="right">Ações</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {solos.map((solo) => (
-                <TableRow key={solo.id}>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight="bold">
-                      {solo.nome}
+        <Grid container spacing={3}>
+          {items.map((item) => (
+            <Grid item xs={12} md={6} lg={4} key={item.id}>
+              <Card sx={{ borderRadius: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flex: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                    <Typography variant="h6" fontWeight="bold">
+                      {item.nome || 'Solo não nomeado'}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Profundidade: {solo.profundidadeCm}cm
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={solo.tipoSolo} size="small" variant="outlined" />
-                  </TableCell>
-                  <TableCell>
                     <Chip
-                      label={solo.fertilidade}
+                      label={item.possuiAnalise ? '📊 Analisado' : '⚠️ Sem Análise'}
+                      color={item.possuiAnalise ? 'success' : 'warning'}
                       size="small"
-                      color={getFertilidadeColor(solo.fertilidade)}
                     />
-                  </TableCell>
-                  <TableCell>
-                    {solo.possuiAnalise ? (
-                      <Chip label={`pH ${solo.ph}`} size="small" color="info" variant="outlined" />
-                    ) : (
-                      <Chip label="Sem análise" size="small" variant="outlined" />
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Stack spacing={0.5}>
+                    {item.tipoSolo && (
+                      <Typography variant="body2" color="text.secondary">
+                        📋 Tipo: {item.tipoSolo}
+                      </Typography>
                     )}
-                  </TableCell>
-                  <TableCell>
-                    {solo.erosaoPresente ? (
-                      <Chip label={solo.tipoErosao} size="small" color="warning" />
-                    ) : (
-                      <Chip label="Sem erosão" size="small" variant="outlined" />
+                    {item.classificacao && (
+                      <Typography variant="body2" color="text.secondary">
+                        🏷️ Classificação: {item.classificacao}
+                      </Typography>
                     )}
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton size="small" onClick={() => {
-                      setSelectedSolo(solo);
-                      setOpenForm(true);
-                    }}>
-                      <Edit fontSize="small" />
+                    {item.fertilidade && (
+                      <Typography variant="body2" color="text.secondary">
+                        🌿 Fertilidade: {item.fertilidade}
+                      </Typography>
+                    )}
+                    {item.ph && (
+                      <Typography variant="body2" color="text.secondary">
+                        🧪 pH: {item.ph}
+                      </Typography>
+                    )}
+                    {item.erosaoPresente && (
+                      <Typography variant="body2" color="text.secondary">
+                        ⚠️ Erosão Presente
+                      </Typography>
+                    )}
+                    {item.profundidadeCm && (
+                      <Typography variant="body2" color="text.secondary">
+                        📏 Profundidade: {item.profundidadeCm} cm
+                      </Typography>
+                    )}
+                  </Stack>
+                </CardContent>
+                <CardActions sx={{ px: 2, pb: 2, pt: 0, justifyContent: 'flex-end' }}>
+                  <Tooltip title="Editar">
+                    <IconButton size="small" color="primary" onClick={() => navigate(`/solo/editar/${item.id}`)}>
+                      <EditIcon fontSize="small" />
                     </IconButton>
-                    <IconButton size="small" onClick={() => handleDelete(solo.id)}>
-                      <Delete fontSize="small" />
+                  </Tooltip>
+                  <Tooltip title="Excluir">
+                    <IconButton size="small" color="error" onClick={() => handleDelete(item.id)}>
+                      <DeleteIcon fontSize="small" />
                     </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                  </Tooltip>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       )}
-
-      <SoloForm
-        open={openForm}
-        onClose={() => {
-          setOpenForm(false);
-          setSelectedSolo(undefined);
-        }}
-        onSuccess={loadData}
-        initialData={selectedSolo}
-        propriedadeId={selectedPropriedadeId}
-      />
     </Box>
   );
-};
-export default SoloList;
+}

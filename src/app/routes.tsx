@@ -59,6 +59,12 @@ const BiodiversidadeList = lazy(() => import("../modules/solo-biodiversidade/Bio
 const NonConformitiesList = lazy(() => import("../modules/conformidade/NonConformitiesList"));
 
 // =====================================================
+// SOLO E BIODIVERSIDADE - FORMULÁRIOS
+// =====================================================
+const SoloForm = lazy(() => import("../modules/solo-biodiversidade/components/SoloForm"));
+const BiodiversidadeForm = lazy(() => import("../modules/solo-biodiversidade/components/BiodiversidadeForm"));
+
+// =====================================================
 // MELHORIA 1: DOCUMENT INTELLIGENCE
 // =====================================================
 const PmoImportacaoPage = lazy(() => import("../pages/pmo/PmoImportacaoPage"));
@@ -68,7 +74,15 @@ const PmoImportacaoPage = lazy(() => import("../pages/pmo/PmoImportacaoPage"));
 // =====================================================
 const CadernoCampoPage = lazy(() => import("../pages/campo/CadernoCampoPage"));
 const NovaAtividadePage = lazy(() => import("../pages/campo/NovaAtividadePage"));
+const EditarAtividadePage = lazy(() => import("../pages/campo/EditarAtividadePage"));
 const TalhoesPage = lazy(() => import("../pages/campo/TalhoesPage"));
+
+// =====================================================
+// NOVAS FUNCIONALIDADES DO CADERNO DE CAMPO
+// =====================================================
+const PerdasProducaoPage = lazy(() => import("../pages/campo/PerdasProducaoPage"));
+const RegistroClimaticoPage = lazy(() => import("../pages/campo/RegistroClimaticoPage"));
+const CompostagemPage = lazy(() => import("../pages/campo/CompostagemPage"));
 
 // Componente de loading
 const PageLoader = () => (
@@ -118,15 +132,45 @@ export default function AppRoutes() {
           </Suspense>
         } />
 
+        {/* ===================================================== */}
+        {/* SOLO E BIODIVERSIDADE */}
+        {/* ===================================================== */}
+        
+        {/* Solo */}
         <Route path="solo" element={
           <Suspense fallback={<PageLoader />}>
             <SoloList />
           </Suspense>
         } />
+        
+        <Route path="solo/novo" element={
+          <Suspense fallback={<PageLoader />}>
+            <SoloForm />
+          </Suspense>
+        } />
+        
+        <Route path="solo/editar/:id" element={
+          <Suspense fallback={<PageLoader />}>
+            <SoloForm />
+          </Suspense>
+        } />
 
+        {/* Biodiversidade */}
         <Route path="biodiversidade" element={
           <Suspense fallback={<PageLoader />}>
             <BiodiversidadeList />
+          </Suspense>
+        } />
+        
+        <Route path="biodiversidade/novo" element={
+          <Suspense fallback={<PageLoader />}>
+            <BiodiversidadeForm />
+          </Suspense>
+        } />
+        
+        <Route path="biodiversidade/editar/:id" element={
+          <Suspense fallback={<PageLoader />}>
+            <BiodiversidadeForm />
           </Suspense>
         } />
 
@@ -174,9 +218,7 @@ export default function AppRoutes() {
           </Suspense>
         } />
 
-        {/* ===================================================== */}
-        {/* MELHORIA 1: IMPORTAR DOCUMENTO */}
-        {/* ===================================================== */}
+        {/* Importar Documento */}
         <Route path="pmo/importar" element={
           <Suspense fallback={<PageLoader />}>
             <PmoImportacaoPage />
@@ -184,8 +226,10 @@ export default function AppRoutes() {
         } />
 
         {/* ===================================================== */}
-        {/* MELHORIA 2: CADERNO DE CAMPO DIGITAL */}
+        {/* CADERNO DE CAMPO - COMPLETO */}
         {/* ===================================================== */}
+        
+        {/* Atividades */}
         <Route path="caderno-campo" element={
           <Suspense fallback={<PageLoader />}>
             <CadernoCampoPage />
@@ -198,12 +242,41 @@ export default function AppRoutes() {
           </Suspense>
         } />
 
+        <Route path="caderno-campo/editar/:id" element={
+          <Suspense fallback={<PageLoader />}>
+            <EditarAtividadePage />
+          </Suspense>
+        } />
+
+        {/* Talhões */}
         <Route path="talhoes" element={
           <Suspense fallback={<PageLoader />}>
             <TalhoesPage />
           </Suspense>
         } />
 
+        {/* Perdas e Danos */}
+        <Route path="perdas" element={
+          <Suspense fallback={<PageLoader />}>
+            <PerdasProducaoPage />
+          </Suspense>
+        } />
+
+        {/* Registros Climáticos */}
+        <Route path="clima" element={
+          <Suspense fallback={<PageLoader />}>
+            <RegistroClimaticoPage />
+          </Suspense>
+        } />
+
+        {/* Compostagem */}
+        <Route path="compostagem" element={
+          <Suspense fallback={<PageLoader />}>
+            <CompostagemPage />
+          </Suspense>
+        } />
+
+        {/* PMO - Detalhes do Plano */}
         <Route path="pmo/planos/:id" element={
           <Suspense fallback={<PageLoader />}>
             <PmoPlanoDetalheLayout />

@@ -22,12 +22,6 @@ import {
   InputAdornment,
   useTheme,
   alpha,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
-  Card,
-  CardContent,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -40,54 +34,79 @@ import {
   CloudUpload as CloudUploadIcon,
   CheckCircle as CheckCircleIcon,
   Timer as TimerIcon,
-  Info as InfoIcon,
   Check as CheckIcon,
+  MyLocation as MyLocationIcon,
 } from "@mui/icons-material";
 import GravadorAudio from "./components/GravadorAudio";
+import { campoApi } from "../../api/campo.api";
+import { useAuth } from "../../auth/AuthContext";
 
 interface FormData {
   tipoAtividade: string;
-  talhaoId: string;
-  culturaId: string;
+  talhaoId: number | null;
+  culturaId: number | null;
   descricao: string;
-  insumoId: string;
+  insumoId: number | null;
+  insumoNome: string;
   dosagem: string;
   areaAplicada: string;
   quantidadeProduzida: string;
   unidadeProducao: string;
   latitude: string;
   longitude: string;
-  fotos: File[];
+}
+
+interface Talhao {
+  id: number;
+  nome: string;
+  area: number;
+  culturaAtual?: string;
+}
+
+interface Cultura {
+  id: number;
+  nome: string;
+  nomeCientifico?: string;
 }
 
 export default function NovaAtividadePage() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { propriedadeAtual } = useAuth();
+  
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [fotos, setFotos] = useState<File[]>([]);
-  const [activeStep, setActiveStep] = useState(0);
+  const [capturandoLocalizacao, setCapturandoLocalizacao] = useState(false);
+  
+  const [taloes, setTaloes] = useState<Talhao[]>([]);
+  const [culturas, setCulturas] = useState<Cultura[]>([]);
+  const [loadingDados, setLoadingDados] = useState(false);
 
-  // Dados do formulário
   const [formData, setFormData] = useState<FormData>({
     tipoAtividade: "",
-    talhaoId: "",
-    culturaId: "",
+    talhaoId: null,
+    culturaId: null,
     descricao: "",
-    insumoId: "",
+    insumoId: null,
+    insumoNome: "",
     dosagem: "",
     areaAplicada: "",
     quantidadeProduzida: "",
     unidadeProducao: "kg",
-    latitude: "-23.5505",
-    longitude: "-46.6333",
-    fotos: [],
+    latitude: "",
+    longitude: "",
   });
 
-  // Capturar geolocalização
+  useEffect(() => {
+    if (propriedadeAtual?.id) {
+      carregarDados(propriedadeAtual.id);
+    }
+  }, [propriedadeAtual]);
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -105,12 +124,72 @@ export default function NovaAtividadePage() {
     }
   }, []);
 
+  const carregarDados = async (propriedadeId: number) => {
+    setLoadingDados(true);
+    try {
+      const talhoesData = await campoApi.listarTaloes(propriedadeId);
+      setTaloes(talhoesData || []);
+      
+      const culturasData = await campoApi.listarCulturas();
+      setCulturas(culturasData || []);
+      
+    } catch (err) {
+      console.error('Erro ao carregar dados:', err);
+    } finally {
+      setLoadingDados(false);
+    }
+  };
+
   const handleInputChange = (field: keyof FormData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value,
     }));
     if (error) setError(null);
+  };
+
+  const handleCapturarLocalizacao = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocalização não é suportada pelo seu navegador.');
+      return;
+    }
+
+    setCapturandoLocalizacao(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setFormData(prev => ({
+          ...prev,
+          latitude: latitude.toFixed(6),
+          longitude: longitude.toFixed(6),
+        }));
+        setCapturandoLocalizacao(false);
+      },
+      (error) => {
+        console.error('Erro ao capturar localização:', error);
+        setCapturandoLocalizacao(false);
+        let errorMsg = 'Erro ao capturar localização. ';
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMsg += 'Permissão negada. Habilite a localização no navegador.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMsg += 'Localização indisponível. Tente novamente.';
+            break;
+          case error.TIMEOUT:
+            errorMsg += 'Tempo limite excedido. Tente novamente.';
+            break;
+          default:
+            errorMsg += 'Tente novamente.';
+        }
+        setError(errorMsg);
+      },
+      { 
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,12 +213,12 @@ export default function NovaAtividadePage() {
       setError("Selecione o tipo de atividade");
       return false;
     }
-    if (!formData.talhaoId) {
-      setError("Selecione o talhão");
-      return false;
-    }
     if (!formData.descricao) {
       setError("Descreva a atividade realizada");
+      return false;
+    }
+    if (!propriedadeAtual) {
+      setError("Nenhuma propriedade selecionada");
       return false;
     }
     return true;
@@ -149,12 +228,60 @@ export default function NovaAtividadePage() {
     event.preventDefault();
     
     if (!validateForm()) return;
+    if (!propriedadeAtual) {
+      setError("Nenhuma propriedade disponível");
+      return;
+    }
 
     setLoading(true);
     setError(null);
     setUploadProgress(0);
 
     try {
+      const formDataToSend = new FormData();
+      
+      formDataToSend.append("propriedadeId", String(propriedadeAtual.id));
+      formDataToSend.append("tipoAtividade", formData.tipoAtividade);
+      formDataToSend.append("descricao", formData.descricao);
+      
+      if (formData.talhaoId) {
+        formDataToSend.append("talhaoId", String(formData.talhaoId));
+      }
+      if (formData.culturaId) {
+        formDataToSend.append("culturaId", String(formData.culturaId));
+      }
+      if (formData.insumoNome) {
+        formDataToSend.append("insumoNome", formData.insumoNome);
+      }
+      if (formData.dosagem) {
+        formDataToSend.append("dosagem", formData.dosagem);
+      }
+      if (formData.areaAplicada) {
+        formDataToSend.append("areaAplicada", formData.areaAplicada);
+      }
+      if (formData.quantidadeProduzida) {
+        formDataToSend.append("quantidadeProduzida", formData.quantidadeProduzida);
+      }
+      if (formData.unidadeProducao) {
+        formDataToSend.append("unidadeProducao", formData.unidadeProducao);
+      }
+      if (formData.latitude) {
+        formDataToSend.append("latitude", formData.latitude);
+      }
+      if (formData.longitude) {
+        formDataToSend.append("longitude", formData.longitude);
+      }
+
+      fotos.forEach((foto) => {
+        formDataToSend.append("fotos", foto);
+      });
+
+      if (audioFile) {
+        formDataToSend.append("audio", audioFile);
+      }
+
+      console.log("📤 Enviando atividade - Propriedade:", propriedadeAtual.nome, "(ID:", propriedadeAtual.id + ")");
+
       const interval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -165,43 +292,82 @@ export default function NovaAtividadePage() {
         });
       }, 300);
 
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const response = await campoApi.registrarAtividade(formDataToSend);
       
       clearInterval(interval);
       setUploadProgress(100);
+      
+      console.log("✅ Atividade criada com sucesso:", response);
       
       setSuccess(true);
       setTimeout(() => {
         navigate("/caderno-campo");
       }, 2000);
-    } catch (err) {
-      setError("Erro ao registrar atividade. Tente novamente.");
+      
+    } catch (err: any) {
+      console.error("❌ Erro ao criar atividade:", err);
+      
+      let errorMessage = "Erro ao registrar atividade. Tente novamente.";
+      if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+      
+      if (errorMessage.includes("Talhão não encontrado")) {
+        errorMessage = "O talhão selecionado não existe. Por favor, selecione um talhão válido ou crie um novo.";
+      }
+      
+      setError(errorMessage);
+      setUploadProgress(0);
     } finally {
       setLoading(false);
     }
   };
 
+  if (loadingDados) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Carregando dados...</Typography>
+      </Box>
+    );
+  }
+
+  if (!propriedadeAtual) {
+    return (
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="h5" gutterBottom>🏠 Nenhuma propriedade selecionada</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Selecione uma propriedade no menu superior para registrar atividades.
+        </Typography>
+        <Button variant="contained" onClick={() => navigate('/dashboard')}>
+          Ir para Dashboard
+        </Button>
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <Box sx={{ maxWidth: 1000, mx: "auto", px: { xs: 1.5, sm: 2, md: 3 } }}>
       {/* ============================================ */}
-      {/* CABEÇALHO - VERSÃO OTIMIZADA */}
+      {/* CABEÇALHO - MAIS COMPACTO */}
       {/* ============================================ */}
       <Box sx={{ 
         display: "flex", 
         flexDirection: { xs: "column", sm: "row" },
         justifyContent: "space-between", 
         alignItems: { xs: "flex-start", sm: "center" },
-        gap: 2,
-        mb: 3,
+        gap: { xs: 1.5, sm: 2 },
+        mb: { xs: 2, sm: 2.5, md: 3 },
       }}>
-        {/* Lado Esquerdo: Título e Subtítulo */}
-        <Box>
+        <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
           <Typography 
             variant="h4" 
             fontWeight="bold" 
             color="primary.main"
             sx={{ 
-              fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2rem' },
+              fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem', lg: '2rem' },
               display: "flex",
               alignItems: "center",
               gap: 1,
@@ -213,59 +379,61 @@ export default function NovaAtividadePage() {
             variant="body2" 
             color="text.secondary"
             sx={{ 
-              fontSize: { xs: '0.8rem', sm: '0.9rem' },
+              fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem', lg: '0.875rem' },
+              mt: 0.25,
             }}
           >
-            Preencha os dados para registrar uma nova atividade no caderno de campo
+            {propriedadeAtual?.nome || 'Preencha os dados para registrar uma nova atividade'}
           </Typography>
         </Box>
 
-        {/* Lado Direito: Data e Botão Voltar */}
         <Box sx={{ 
           display: "flex", 
           alignItems: "center", 
-          gap: 2,
+          gap: { xs: 1, sm: 1.5, md: 2 },
           flexWrap: "wrap",
           justifyContent: { xs: "flex-start", sm: "flex-end" },
           width: { xs: "100%", sm: "auto" },
         }}>
-          {/* Data */}
           <Chip 
-            icon={<TimerIcon sx={{ fontSize: 16 }} />} 
+            icon={<TimerIcon sx={{ fontSize: { xs: 14, sm: 16 } }} />} 
             label={new Date().toLocaleDateString('pt-BR', { 
               day: '2-digit', 
-              month: 'long', 
+              month: 'short', 
               year: 'numeric' 
             })} 
             variant="outlined"
-            size="medium"
+            size="small"
             sx={{ 
               borderRadius: 2,
+              height: { xs: 28, sm: 32 },
               bgcolor: alpha(theme.palette.primary.main, 0.04),
               borderColor: alpha(theme.palette.primary.main, 0.2),
               '& .MuiChip-label': {
                 fontWeight: 500,
+                fontSize: { xs: '0.6rem', sm: '0.7rem', md: '0.75rem' },
               },
             }}
           />
 
-          {/* Botão Voltar */}
           <Button
-            startIcon={<ArrowBackIcon />}
+            startIcon={<ArrowBackIcon sx={{ fontSize: { xs: 18, sm: 20 } }} />}
             onClick={() => navigate("/caderno-campo")}
             variant="outlined"
-            size="medium"
+            size="small"
             sx={{ 
               borderRadius: 2,
-              minWidth: 120,
+              height: { xs: 36, sm: 40 },
+              px: { xs: 1.5, sm: 2 },
+              minWidth: { xs: 80, sm: 100 },
               borderColor: alpha(theme.palette.primary.main, 0.3),
               color: 'text.secondary',
+              fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' },
               '&:hover': {
                 borderColor: 'primary.main',
                 bgcolor: alpha(theme.palette.primary.main, 0.04),
                 color: 'primary.main',
               },
-              transition: 'all 0.2s ease',
             }}
           >
             Voltar
@@ -279,7 +447,7 @@ export default function NovaAtividadePage() {
       {success && (
         <Alert 
           severity="success" 
-          sx={{ mb: 3, borderRadius: 2 }}
+          sx={{ mb: 2, borderRadius: 2 }}
           icon={<CheckCircleIcon />}
         >
           ✅ Atividade registrada com sucesso! Redirecionando...
@@ -289,7 +457,7 @@ export default function NovaAtividadePage() {
       {error && (
         <Alert 
           severity="error" 
-          sx={{ mb: 3, borderRadius: 2 }}
+          sx={{ mb: 2, borderRadius: 2 }}
           onClose={() => setError(null)}
         >
           ❌ {error}
@@ -300,18 +468,18 @@ export default function NovaAtividadePage() {
       {/* PROGRESSO DE UPLOAD */}
       {/* ============================================ */}
       {loading && uploadProgress < 100 && (
-        <Paper sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <CircularProgress size={28} variant="determinate" value={uploadProgress} thickness={4} />
+            <CircularProgress size={24} variant="determinate" value={uploadProgress} thickness={4} />
             <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" fontWeight={600}>
+              <Typography variant="body2" fontWeight={600} sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem' } }}>
                 Enviando atividade... {uploadProgress}%
               </Typography>
               <Box sx={{ width: '100%', mt: 0.5 }}>
                 <Box sx={{ 
-                  height: 6, 
+                  height: 4, 
                   bgcolor: alpha(theme.palette.primary.main, 0.15),
-                  borderRadius: 3,
+                  borderRadius: 2,
                   overflow: 'hidden',
                 }}>
                   <Box sx={{ 
@@ -319,7 +487,7 @@ export default function NovaAtividadePage() {
                     height: '100%',
                     bgcolor: 'primary.main',
                     transition: 'width 0.4s ease',
-                    borderRadius: 3,
+                    borderRadius: 2,
                   }} />
                 </Box>
               </Box>
@@ -331,47 +499,55 @@ export default function NovaAtividadePage() {
       {/* ============================================ */}
       {/* FORMULÁRIO PRINCIPAL */}
       {/* ============================================ */}
-      <Paper sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: 3 }}>
+      <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, borderRadius: 3 }}>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
             {/* ========================================== */}
             {/* SEÇÃO 1: INFORMAÇÕES BÁSICAS */}
             {/* ========================================== */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
                 <Box sx={{ 
-                  width: 32, 
-                  height: 32, 
+                  width: { xs: 24, sm: 28, md: 32 }, 
+                  height: { xs: 24, sm: 28, md: 32 }, 
                   borderRadius: '50%', 
                   bgcolor: alpha(theme.palette.primary.main, 0.12),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                  <Typography variant="body2" fontWeight={700} color="primary.main">1</Typography>
+                  <Typography variant="body2" fontWeight={700} color="primary.main" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' } }}>
+                    1
+                  </Typography>
                 </Box>
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                   Informações Básicas
                 </Typography>
                 <Chip 
                   label="Obrigatório" 
                   size="small" 
                   color="error" 
-                  sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600 }}
+                  sx={{ height: { xs: 18, sm: 20 }, fontSize: { xs: '0.5rem', sm: '0.55rem' }, fontWeight: 600 }}
                 />
               </Box>
-              <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 2 }} />
             </Grid>
 
             {/* Tipo de Atividade */}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <FormControl fullWidth required>
-                <InputLabel>Tipo de Atividade</InputLabel>
+                <InputLabel sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
+                  Tipo de Atividade
+                </InputLabel>
                 <Select
                   label="Tipo de Atividade"
                   value={formData.tipoAtividade}
                   onChange={(e) => handleInputChange("tipoAtividade", e.target.value)}
-                  sx={{ borderRadius: 2 }}
+                  sx={{ 
+                    borderRadius: 2,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  }}
                 >
                   <MenuItem value="PLANTIO">🌱 Plantio</MenuItem>
                   <MenuItem value="APLICACAO">🧪 Aplicação de Insumo</MenuItem>
@@ -382,62 +558,97 @@ export default function NovaAtividadePage() {
                   <MenuItem value="CONTROLE_PRAGAS">🐛 Controle de Pragas</MenuItem>
                   <MenuItem value="OUTRO">📌 Outro</MenuItem>
                 </Select>
-                <FormHelperText>Selecione o tipo da atividade realizada</FormHelperText>
+                <FormHelperText sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>
+                  Selecione o tipo da atividade realizada
+                </FormHelperText>
               </FormControl>
             </Grid>
 
             {/* Data/Hora */}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Data/Hora da Atividade"
                 type="datetime-local"
-                value={new Date().toISOString().slice(0, 16)}
+                defaultValue={new Date().toISOString().slice(0, 16)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <CalendarTodayIcon fontSize="small" color="action" />
+                      <CalendarTodayIcon fontSize="small" color="action" sx={{ fontSize: { xs: 16, sm: 18, md: 20 } }} />
                     </InputAdornment>
                   ),
                 }}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  '& .MuiOutlinedInput-root': {
+                    height: { xs: 44, sm: 46, md: 48 },
+                    borderRadius: 2,
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                }}
               />
             </Grid>
 
             {/* Talhão */}
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth required>
-                <InputLabel>Talhão</InputLabel>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
+                  Talhão
+                </InputLabel>
                 <Select
                   label="Talhão"
-                  value={formData.talhaoId}
-                  onChange={(e) => handleInputChange("talhaoId", e.target.value)}
-                  sx={{ borderRadius: 2 }}
+                  value={formData.talhaoId || ''}
+                  onChange={(e) => handleInputChange("talhaoId", e.target.value ? Number(e.target.value) : null)}
+                  sx={{ 
+                    borderRadius: 2,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  }}
                 >
-                  <MenuItem value="1">🌾 Talhão Lagoa Norte (12.5 ha)</MenuItem>
-                  <MenuItem value="2">🌾 Talhão Sul (8.3 ha)</MenuItem>
-                  <MenuItem value="3">🌾 Talhão Leste (15.7 ha)</MenuItem>
+                  <MenuItem value="">Nenhum</MenuItem>
+                  {taloes.map((talhao) => (
+                    <MenuItem key={talhao.id} value={talhao.id}>
+                      🌾 {talhao.nome} {talhao.area ? `(${talhao.area} ha)` : ''}
+                    </MenuItem>
+                  ))}
                 </Select>
-                <FormHelperText>Selecione o talhão onde a atividade foi realizada</FormHelperText>
+                <FormHelperText sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>
+                  {taloes.length === 0 
+                    ? 'Nenhum talhão cadastrado. Cadastre um talhão primeiro.' 
+                    : 'Selecione o talhão onde a atividade foi realizada'}
+                </FormHelperText>
               </FormControl>
             </Grid>
 
             {/* Cultura */}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel>Cultura</InputLabel>
+                <InputLabel sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
+                  Cultura
+                </InputLabel>
                 <Select
                   label="Cultura"
-                  value={formData.culturaId}
-                  onChange={(e) => handleInputChange("culturaId", e.target.value)}
-                  sx={{ borderRadius: 2 }}
+                  value={formData.culturaId || ''}
+                  onChange={(e) => handleInputChange("culturaId", e.target.value ? Number(e.target.value) : null)}
+                  sx={{ 
+                    borderRadius: 2,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  }}
                 >
-                  <MenuItem value="1">🌱 Soja</MenuItem>
-                  <MenuItem value="2">🌽 Milho</MenuItem>
-                  <MenuItem value="3">🫘 Feijão</MenuItem>
-                  <MenuItem value="4">🌾 Arroz</MenuItem>
+                  <MenuItem value="">Nenhuma</MenuItem>
+                  {culturas.map((cultura) => (
+                    <MenuItem key={cultura.id} value={cultura.id}>
+                      🌱 {cultura.nome}
+                    </MenuItem>
+                  ))}
                 </Select>
-                <FormHelperText>Selecione a cultura relacionada à atividade</FormHelperText>
+                <FormHelperText sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>
+                  Selecione a cultura relacionada à atividade
+                </FormHelperText>
               </FormControl>
             </Grid>
 
@@ -448,12 +659,24 @@ export default function NovaAtividadePage() {
                 required
                 label="Descrição da Atividade"
                 multiline
-                rows={4}
-                placeholder="Descreva detalhadamente a atividade realizada, incluindo observações importantes sobre o processo, condições climáticas, resultados esperados, etc."
+                rows={3}
+                placeholder="Descreva detalhadamente a atividade realizada..."
                 value={formData.descricao}
                 onChange={(e) => handleInputChange("descricao", e.target.value)}
-                helperText="Quanto mais detalhada a descrição, melhor será o histórico da propriedade"
-                sx={{ borderRadius: 2 }}
+                helperText="Quanto mais detalhada a descrição, melhor será o histórico"
+                sx={{ 
+                  borderRadius: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
+                  },
+                }}
               />
             </Grid>
 
@@ -461,52 +684,61 @@ export default function NovaAtividadePage() {
             {/* SEÇÃO 2: INSUMOS E PRODUÇÃO */}
             {/* ========================================== */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 2, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1.5, mb: 1.5 }}>
                 <Box sx={{ 
-                  width: 32, 
-                  height: 32, 
+                  width: { xs: 24, sm: 28, md: 32 }, 
+                  height: { xs: 24, sm: 28, md: 32 }, 
                   borderRadius: '50%', 
                   bgcolor: alpha(theme.palette.success.main, 0.12),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                  <Typography variant="body2" fontWeight={700} color="success.main">2</Typography>
+                  <Typography variant="body2" fontWeight={700} color="success.main" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' } }}>
+                    2
+                  </Typography>
                 </Box>
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                   Insumos e Produção
                 </Typography>
                 <Chip 
                   label="Opcional" 
                   size="small" 
                   color="info" 
-                  sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600 }}
+                  sx={{ height: { xs: 18, sm: 20 }, fontSize: { xs: '0.5rem', sm: '0.55rem' }, fontWeight: 600 }}
                 />
               </Box>
-              <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 2 }} />
             </Grid>
 
             {/* Insumo */}
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Insumo Utilizado</InputLabel>
-                <Select
-                  label="Insumo Utilizado"
-                  value={formData.insumoId}
-                  onChange={(e) => handleInputChange("insumoId", e.target.value)}
-                  sx={{ borderRadius: 2 }}
-                >
-                  <MenuItem value="1">🧪 Fungicida X 500ml</MenuItem>
-                  <MenuItem value="2">🧪 Herbicida Y 1L</MenuItem>
-                  <MenuItem value="3">🌿 Adubo Orgânico 20kg</MenuItem>
-                  <MenuItem value="4">💧 Fertilizante NPK 10-10-10</MenuItem>
-                </Select>
-                <FormHelperText>Selecione o insumo utilizado na atividade</FormHelperText>
-              </FormControl>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Insumo Utilizado"
+                placeholder="Ex: Fungicida X, Herbicida Y, Adubo Orgânico"
+                value={formData.insumoNome}
+                onChange={(e) => handleInputChange("insumoNome", e.target.value)}
+                helperText="Digite o nome do insumo utilizado"
+                sx={{ 
+                  borderRadius: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
+                  },
+                }}
+              />
             </Grid>
 
-            {/* Dosagem */}
-            <Grid item xs={12} sm={3}>
+            {/* Dosagem e Área */}
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Dosagem"
@@ -517,16 +749,27 @@ export default function NovaAtividadePage() {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>L/ha</Typography>
+                      <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>
+                        L/ha
+                      </Typography>
                     </InputAdornment>
                   ),
                 }}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                }}
               />
             </Grid>
 
-            {/* Área Aplicada */}
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Área Aplicada"
@@ -537,16 +780,28 @@ export default function NovaAtividadePage() {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>ha</Typography>
+                      <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>
+                        ha
+                      </Typography>
                     </InputAdornment>
                   ),
                 }}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                }}
               />
             </Grid>
 
             {/* Quantidade Produzida */}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Quantidade Produzida"
@@ -557,24 +812,37 @@ export default function NovaAtividadePage() {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <FormControl size="small" sx={{ minWidth: 70 }}>
+                      <FormControl size="small" sx={{ minWidth: { xs: 60, sm: 70 } }}>
                         <Select
                           value={formData.unidadeProducao}
                           onChange={(e) => handleInputChange("unidadeProducao", e.target.value)}
                           variant="standard"
                           disableUnderline
-                          sx={{ fontWeight: 500 }}
+                          sx={{ 
+                            fontWeight: 500,
+                            fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
+                          }}
                         >
-                          <MenuItem value="kg">kg</MenuItem>
-                          <MenuItem value="ton">ton</MenuItem>
-                          <MenuItem value="sc">sc</MenuItem>
-                          <MenuItem value="un">un</MenuItem>
+                          <MenuItem value="kg" sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>kg</MenuItem>
+                          <MenuItem value="ton" sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>ton</MenuItem>
+                          <MenuItem value="sc" sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>sc</MenuItem>
+                          <MenuItem value="un" sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>un</MenuItem>
                         </Select>
                       </FormControl>
                     </InputAdornment>
                   ),
                 }}
-                sx={{ borderRadius: 2 }}
+                sx={{ 
+                  borderRadius: 2,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                  },
+                }}
               />
             </Grid>
 
@@ -582,29 +850,31 @@ export default function NovaAtividadePage() {
             {/* SEÇÃO 3: MÍDIA E LOCALIZAÇÃO */}
             {/* ========================================== */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 2, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 1.5, mb: 1.5 }}>
                 <Box sx={{ 
-                  width: 32, 
-                  height: 32, 
+                  width: { xs: 24, sm: 28, md: 32 }, 
+                  height: { xs: 24, sm: 28, md: 32 }, 
                   borderRadius: '50%', 
                   bgcolor: alpha(theme.palette.info.main, 0.12),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                  <Typography variant="body2" fontWeight={700} color="info.main">3</Typography>
+                  <Typography variant="body2" fontWeight={700} color="info.main" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' } }}>
+                    3
+                  </Typography>
                 </Box>
-                <Typography variant="h6" fontWeight={600}>
+                <Typography variant="h6" fontWeight={600} sx={{ fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' } }}>
                   Mídia e Localização
                 </Typography>
                 <Chip 
                   label="Recomendado" 
                   size="small" 
                   color="warning" 
-                  sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600 }}
+                  sx={{ height: { xs: 18, sm: 20 }, fontSize: { xs: '0.5rem', sm: '0.55rem' }, fontWeight: 600 }}
                 />
               </Box>
-              <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 2 }} />
             </Grid>
 
             {/* Geolocalização */}
@@ -612,53 +882,79 @@ export default function NovaAtividadePage() {
               <Paper 
                 variant="outlined" 
                 sx={{ 
-                  p: 2.5, 
+                  p: { xs: 1.5, sm: 2 }, 
                   borderRadius: 2,
                   bgcolor: alpha(theme.palette.primary.main, 0.02),
                   borderColor: alpha(theme.palette.primary.main, 0.15),
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                  <Box sx={{ 
-                    width: 32, 
-                    height: 32, 
-                    borderRadius: '50%', 
-                    bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <LocationOnIcon fontSize="small" color="primary" />
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 1, mb: 1.5 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Box sx={{ 
+                      width: { xs: 28, sm: 32 }, 
+                      height: { xs: 28, sm: 32 }, 
+                      borderRadius: '50%', 
+                      bgcolor: alpha(theme.palette.primary.main, 0.1),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <LocationOnIcon fontSize="small" color="primary" sx={{ fontSize: { xs: 18, sm: 20 } }} />
+                    </Box>
+                    <Typography variant="subtitle2" fontWeight={600} sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
+                      Localização GPS
+                    </Typography>
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={600}>
-                    Localização GPS
-                  </Typography>
-                  <Chip 
-                    label="Automático" 
-                    size="small" 
-                    color="success" 
-                    sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600 }}
-                  />
-                  <Box sx={{ flex: 1 }} />
-                  <Chip 
-                    icon={<CheckIcon sx={{ fontSize: 14 }} />}
-                    label="Ativo" 
-                    size="small" 
-                    color="success" 
-                    variant="outlined"
-                    sx={{ height: 20, fontSize: '0.6rem' }}
-                  />
+                  
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                    <Chip 
+                      label={formData.latitude && formData.longitude ? "✅ Capturada" : "⚠️ Não capturada"} 
+                      size="small" 
+                      color={formData.latitude && formData.longitude ? "success" : "warning"} 
+                      sx={{ height: { xs: 20, sm: 24 }, fontSize: { xs: '0.55rem', sm: '0.6rem' }, fontWeight: 600 }}
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={capturandoLocalizacao ? <CircularProgress size={16} color="inherit" /> : <MyLocationIcon />}
+                      onClick={handleCapturarLocalizacao}
+                      disabled={capturandoLocalizacao}
+                      size="small"
+                      sx={{ 
+                        borderRadius: 2,
+                        height: { xs: 32, sm: 36 },
+                        px: { xs: 1, sm: 1.5, md: 2 },
+                        minWidth: { xs: 80, sm: 100 },
+                        fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {capturandoLocalizacao ? "..." : "📍 Capturar"}
+                    </Button>
+                  </Box>
                 </Box>
-                <Grid container spacing={2}>
+                
+                <Grid container spacing={1.5}>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
                       label="Latitude"
                       size="small"
-                      value={formData.latitude}
-                      InputProps={{ readOnly: true }}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{ borderRadius: 2 }}
+                      value={formData.latitude || "Não informada"}
+                      onChange={(e) => handleInputChange("latitude", e.target.value)}
+                      placeholder="Ex: -23.5505"
+                      sx={{ 
+                        borderRadius: 2,
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          height: { xs: 38, sm: 40 },
+                          fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                          bgcolor: formData.latitude ? alpha(theme.palette.success.main, 0.04) : 'transparent',
+                        },
+                        '& .MuiInputLabel-root': {
+                          fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                        },
+                      }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -666,83 +962,94 @@ export default function NovaAtividadePage() {
                       fullWidth
                       label="Longitude"
                       size="small"
-                      value={formData.longitude}
-                      InputProps={{ readOnly: true }}
-                      InputLabelProps={{ shrink: true }}
-                      sx={{ borderRadius: 2 }}
+                      value={formData.longitude || "Não informada"}
+                      onChange={(e) => handleInputChange("longitude", e.target.value)}
+                      placeholder="Ex: -46.6333"
+                      sx={{ 
+                        borderRadius: 2,
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 2,
+                          height: { xs: 38, sm: 40 },
+                          fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                          bgcolor: formData.longitude ? alpha(theme.palette.success.main, 0.04) : 'transparent',
+                        },
+                        '& .MuiInputLabel-root': {
+                          fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
+                        },
+                      }}
                     />
                   </Grid>
                 </Grid>
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1.5, display: "flex", alignItems: "center", gap: 0.5 }}>
-                  📍 Localização capturada automaticamente pelo GPS do dispositivo
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "flex", alignItems: "center", gap: 0.5, fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' } }}>
+                  <MyLocationIcon sx={{ fontSize: { xs: 12, sm: 14 }, color: 'primary.main' }} />
+                  Clique em "Capturar" para obter sua localização atual
                 </Typography>
               </Paper>
             </Grid>
 
-            {/* Gravação de Áudio */}
+            {/* Áudio */}
             <Grid item xs={12}>
-              <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+              <Paper variant="outlined" sx={{ p: { xs: 1.5, sm: 2 }, borderRadius: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
                   <Box sx={{ 
-                    width: 32, 
-                    height: 32, 
+                    width: { xs: 28, sm: 32 }, 
+                    height: { xs: 28, sm: 32 }, 
                     borderRadius: '50%', 
                     bgcolor: alpha(theme.palette.info.main, 0.1),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                    <MicIcon fontSize="small" color="info" />
+                    <MicIcon fontSize="small" color="info" sx={{ fontSize: { xs: 18, sm: 20 } }} />
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={600}>
+                  <Typography variant="subtitle2" fontWeight={600} sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
                     Gravar Áudio
                   </Typography>
                   <Chip 
                     label="Recomendado" 
                     size="small" 
                     color="info" 
-                    sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600 }}
+                    sx={{ height: { xs: 18, sm: 20 }, fontSize: { xs: '0.5rem', sm: '0.55rem' }, fontWeight: 600 }}
                   />
                 </Box>
-                <GravadorAudio />
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1.5, display: "flex", alignItems: "center", gap: 0.5 }}>
-                  🎙️ Grave um áudio descrevendo a atividade para complementar o registro
+                <GravadorAudio onAudioUpload={handleAudioUpload} />
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "flex", alignItems: "center", gap: 0.5, fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' } }}>
+                  🎙️ Grave um áudio descrevendo a atividade
                 </Typography>
               </Paper>
             </Grid>
 
-            {/* Upload de Fotos */}
+            {/* Fotos */}
             <Grid item xs={12}>
-              <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+              <Paper variant="outlined" sx={{ p: { xs: 1.5, sm: 2 }, borderRadius: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
                   <Box sx={{ 
-                    width: 32, 
-                    height: 32, 
+                    width: { xs: 28, sm: 32 }, 
+                    height: { xs: 28, sm: 32 }, 
                     borderRadius: '50%', 
                     bgcolor: alpha(theme.palette.secondary.main, 0.1),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                    <PhotoCameraIcon fontSize="small" color="secondary" />
+                    <PhotoCameraIcon fontSize="small" color="secondary" sx={{ fontSize: { xs: 18, sm: 20 } }} />
                   </Box>
-                  <Typography variant="subtitle2" fontWeight={600}>
+                  <Typography variant="subtitle2" fontWeight={600} sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
                     Fotos da Atividade
                   </Typography>
                   <Chip 
                     label="Opcional" 
                     size="small" 
                     color="default" 
-                    sx={{ height: 20, fontSize: '0.6rem', fontWeight: 600 }}
+                    sx={{ height: { xs: 18, sm: 20 }, fontSize: { xs: '0.5rem', sm: '0.55rem' }, fontWeight: 600 }}
                   />
                 </Box>
                 
-                {/* Área de Upload */}
                 <Box
                   sx={{
                     border: `2px dashed ${alpha(theme.palette.primary.main, 0.25)}`,
                     borderRadius: 2,
-                    p: 3,
+                    p: { xs: 2, sm: 2.5, md: 3 },
                     textAlign: "center",
                     bgcolor: alpha(theme.palette.primary.main, 0.02),
                     cursor: "pointer",
@@ -762,25 +1069,24 @@ export default function NovaAtividadePage() {
                     style={{ display: "none" }}
                     onChange={handleFileUpload}
                   />
-                  <CloudUploadIcon sx={{ fontSize: 48, color: alpha(theme.palette.primary.main, 0.4), mb: 1 }} />
-                  <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                  <CloudUploadIcon sx={{ fontSize: { xs: 36, sm: 40, md: 48 }, color: alpha(theme.palette.primary.main, 0.4), mb: 1 }} />
+                  <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
                     Clique ou arraste fotos para fazer upload
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' } }}>
                     PNG, JPG, JPEG até 5MB cada
                   </Typography>
                 </Box>
 
-                {/* Miniaturas das Fotos */}
                 {fotos.length > 0 && (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mt: 2 }}>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1.5 }}>
                     {fotos.map((foto, index) => (
                       <Box
                         key={index}
                         sx={{
                           position: "relative",
-                          width: 90,
-                          height: 90,
+                          width: { xs: 64, sm: 72, md: 80 },
+                          height: { xs: 64, sm: 72, md: 80 },
                           borderRadius: 2,
                           overflow: "hidden",
                           border: `2px solid ${alpha(theme.palette.primary.main, 0.15)}`,
@@ -803,20 +1109,20 @@ export default function NovaAtividadePage() {
                           size="small"
                           sx={{
                             position: "absolute",
-                            top: 6,
-                            right: 6,
+                            top: 4,
+                            right: 4,
                             bgcolor: "rgba(0,0,0,0.6)",
                             color: "white",
                             "&:hover": { bgcolor: "rgba(0,0,0,0.8)" },
-                            width: 24,
-                            height: 24,
+                            width: { xs: 18, sm: 20, md: 24 },
+                            height: { xs: 18, sm: 20, md: 24 },
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRemoveFoto(index);
                           }}
                         >
-                          <CloseIcon sx={{ fontSize: 16 }} />
+                          <CloseIcon sx={{ fontSize: { xs: 12, sm: 14, md: 16 } }} />
                         </IconButton>
                       </Box>
                     ))}
@@ -829,21 +1135,24 @@ export default function NovaAtividadePage() {
             {/* BOTÕES DE AÇÃO */}
             {/* ========================================== */}
             <Grid item xs={12}>
-              <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 2 }} />
               <Box sx={{ 
                 display: "flex", 
-                gap: 2, 
+                gap: { xs: 1, sm: 1.5, md: 2 }, 
                 justifyContent: { xs: "center", sm: "flex-end" },
                 flexWrap: "wrap",
+                flexDirection: { xs: "column", sm: "row" },
               }}>
                 <Button
                   variant="outlined"
                   onClick={() => navigate("/caderno-campo")}
                   sx={{ 
                     borderRadius: 2,
-                    minWidth: 140,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    minWidth: { xs: '100%', sm: 140 },
                     borderColor: alpha(theme.palette.error.main, 0.3),
                     color: 'error.main',
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
                     '&:hover': {
                       borderColor: 'error.main',
                       bgcolor: alpha(theme.palette.error.main, 0.04),
@@ -859,9 +1168,10 @@ export default function NovaAtividadePage() {
                   disabled={loading}
                   sx={{ 
                     borderRadius: 2,
-                    px: 4,
-                    py: 1.2,
-                    minWidth: 200,
+                    height: { xs: 44, sm: 46, md: 48 },
+                    px: { xs: 2, sm: 3, md: 4 },
+                    minWidth: { xs: '100%', sm: 200 },
+                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
                     boxShadow: theme.shadows[2],
                     '&:hover': {
                       boxShadow: theme.shadows[4],

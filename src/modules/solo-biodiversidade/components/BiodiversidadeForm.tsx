@@ -16,7 +16,8 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
-import { Biodiversidade, soloBiodiversidadeApi } from '../services/solo-biodiversidade.api';
+import { soloBiodiversidadeApi } from '../services/solo-biodiversidade.api';
+import { Biodiversidade, BiodiversidadeRequest } from "../types/solo.types";
 
 interface BiodiversidadeFormProps {
   open: boolean;

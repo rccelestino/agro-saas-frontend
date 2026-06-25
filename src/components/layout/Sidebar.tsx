@@ -38,6 +38,9 @@ import {
   ListAlt as ListAltIcon,
   AddBox as AddBoxIcon,
   Map as MapIcon,
+  Thermostat as ThermostatIcon,
+  Compost as CompostIcon,
+  ReportProblem as ReportProblemIcon,
 } from "@mui/icons-material";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -165,15 +168,30 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
         </ListItem>
 
         {/* ===================================================== */}
-        {/* CADERNO DE CAMPO (NOVO) */}
+        {/* CADERNO DE CAMPO - COMPLETO */}
         {/* ===================================================== */}
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton
             onClick={handleToggleCadernoCampo}
-            selected={isParentSelected(["/caderno-campo", "/talhoes"])}
+            selected={isParentSelected([
+              "/caderno-campo", 
+              "/talhoes",
+              "/perdas",
+              "/clima",
+              "/compostagem"
+            ])}
             sx={{ borderRadius: 2 }}
           >
-            <ListItemIcon sx={{ color: isParentSelected(["/caderno-campo", "/talhoes"]) ? "primary.main" : "text.secondary", minWidth: 40 }}>
+            <ListItemIcon sx={{ 
+              color: isParentSelected([
+                "/caderno-campo", 
+                "/talhoes",
+                "/perdas",
+                "/clima",
+                "/compostagem"
+              ]) ? "primary.main" : "text.secondary", 
+              minWidth: 40 
+            }}>
               <BookIcon />
             </ListItemIcon>
             <ListItemText 
@@ -197,6 +215,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
 
         <Collapse in={openCadernoCampo} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
+            {/* Minhas Atividades */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/caderno-campo")}
@@ -209,6 +228,8 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemText primary="Minhas Atividades" />
               </ListItemButton>
             </ListItem>
+            
+            {/* Nova Atividade */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/caderno-campo/nova")}
@@ -221,6 +242,8 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemText primary="Nova Atividade" />
               </ListItemButton>
             </ListItem>
+            
+            {/* Meus Talhões */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/talhoes")}
@@ -231,6 +254,59 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                   <MapIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText primary="Meus Talhões" />
+              </ListItemButton>
+            </ListItem>
+            
+            <Divider sx={{ my: 0.5 }} />
+            
+            {/* Perdas e Danos - NOVO */}
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => handleNavigation("/perdas")}
+                selected={isSelected("/perdas")}
+                sx={{ borderRadius: 2 }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <ReportProblemIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Perdas e Danos" 
+                  primaryTypographyProps={{ fontSize: '0.85rem' }}
+                />
+              </ListItemButton>
+            </ListItem>
+            
+            {/* Registros Climáticos - NOVO */}
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => handleNavigation("/clima")}
+                selected={isSelected("/clima")}
+                sx={{ borderRadius: 2 }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <ThermostatIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Registros Climáticos" 
+                  primaryTypographyProps={{ fontSize: '0.85rem' }}
+                />
+              </ListItemButton>
+            </ListItem>
+            
+            {/* Compostagem - NOVO */}
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => handleNavigation("/compostagem")}
+                selected={isSelected("/compostagem")}
+                sx={{ borderRadius: 2 }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <CompostIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Compostagem" 
+                  primaryTypographyProps={{ fontSize: '0.85rem' }}
+                />
               </ListItemButton>
             </ListItem>
           </List>

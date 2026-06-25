@@ -1,21 +1,45 @@
 // src/modules/solo-biodiversidade/services/solo-biodiversidade.api.ts
-import api from '../../../api/axios';
+import { api } from "../../../api/axios";
+
+// ============================================
+// INTERFACES
+// ============================================
+
+export interface Biodiversidade {
+  id: string;
+  empresaId: number;
+  propriedadeId: string;
+  versaoId?: string;
+  possuiReservaLegal: boolean;
+  areaReservaLegal: number;
+  possuiApp: boolean;
+  areaApp: number;
+  especiesNativas?: string;
+  especiesAmeacadas?: string;
+  praticasConservacao?: string;
+  recuperacaoAreas: boolean;
+  certificacaoBiodiversidade: boolean;
+  scoreContribuicao: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Solo {
   id: string;
   empresaId: number;
   propriedadeId: string;
+  versaoId?: string;
   nome: string;
-  tipoSolo: string;
-  classificacao: string;
-  profundidadeCm: number;
-  textura: string;
+  tipoSolo?: string;
+  classificacao?: string;
+  profundidadeCm?: number;
+  textura?: string;
   possuiAnalise: boolean;
   ultimaAnaliseData?: string;
   proximaAnaliseData?: string;
-  ph: number;
-  materiaOrganica: number;
-  fertilidade: string;
+  ph?: number;
+  materiaOrganica?: number;
+  fertilidade?: string;
   laudoUrl?: string;
   erosaoPresente: boolean;
   tipoErosao?: string;
@@ -23,61 +47,84 @@ export interface Solo {
   riscoContaminacao: boolean;
   riscoContaminacaoDesc?: string;
   scoreContribuicao: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface Biodiversidade {
-  id: string;
-  empresaId: number;
-  propriedadeId: string;
-  possuiReservaLegal: boolean;
-  areaReservaLegal: number;
-  possuiApp: boolean;
-  areaApp: number;
-  especiesNativas: string;
-  especiesAmeacadas: string;
-  praticasConservacao: string;
-  recuperacaoAreas: boolean;
-  certificacaoBiodiversidade: boolean;
-  scoreContribuicao: number;
-  createdAt: string;
-  updatedAt: string;
-}
+// ============================================
+// API METHODS
+// ============================================
 
 export const soloBiodiversidadeApi = {
-  // Solo
-  listarSolo: (propriedadeId: string) => 
-    api.get<Solo[]>(`/solo?propriedadeId=${propriedadeId}`),
-  
-  buscarSolo: (id: string) => 
-    api.get<Solo>(`/solo/${id}`),
-  
-  criarSolo: (data: Partial<Solo>) => 
-    api.post<Solo>('/solo', data),
-  
-  atualizarSolo: (id: string, data: Partial<Solo>) => 
-    api.put<Solo>(`/solo/${id}`, data),
-  
-  excluirSolo: (id: string) => 
-    api.delete(`/solo/${id}`),
-  
-  registrarAnaliseSolo: (id: string, data: any) => 
-    api.post(`/solo/${id}/analise`, data),
-  
-  // Biodiversidade
-  listarBiodiversidade: (propriedadeId: string) => 
-    api.get<Biodiversidade[]>(`/biodiversidade?propriedadeId=${propriedadeId}`),
-  
-  buscarBiodiversidade: (id: string) => 
-    api.get<Bodiversidade>(`/biodiversidade/${id}`),
-  
-  criarBiodiversidade: (data: Partial<Biodiversidade>) => 
-    api.post<Biodiversidade>('/biodiversidade', data),
-  
-  atualizarBiodiversidade: (id: string, data: Partial<Biodiversidade>) => 
-    api.put<Biodiversidade>(`/biodiversidade/${id}`, data),
-  
-  excluirBiodiversidade: (id: string) => 
-    api.delete(`/biodiversidade/${id}`),
+  // ============================================
+  // BIODIVERSIDADE
+  // ============================================
+
+  // Listar biodiversidade por propriedade
+  listarBiodiversidade: async (propriedadeId: string): Promise<Biodiversidade[]> => {
+    const response = await api.get(`/api/biodiversidade/propriedade/${propriedadeId}`);
+    return response.data;
+  },
+
+  // Buscar biodiversidade por ID
+  buscarBiodiversidade: async (id: string): Promise<Biodiversidade> => {
+    const response = await api.get(`/api/biodiversidade/${id}`);
+    return response.data;
+  },
+
+  // Criar biodiversidade
+  criarBiodiversidade: async (data: Partial<Biodiversidade>): Promise<Biodiversidade> => {
+    const response = await api.post('/api/biodiversidade', data);
+    return response.data;
+  },
+
+  // Atualizar biodiversidade
+  atualizarBiodiversidade: async (id: string, data: Partial<Biodiversidade>): Promise<Biodiversidade> => {
+    const response = await api.put(`/api/biodiversidade/${id}`, data);
+    return response.data;
+  },
+
+  // Deletar biodiversidade
+  deletarBiodiversidade: async (id: string): Promise<void> => {
+    await api.delete(`/api/biodiversidade/${id}`);
+  },
+
+  // ============================================
+  // SOLO
+  // ============================================
+
+  // Listar solo por propriedade
+  listarSolo: async (propriedadeId: string): Promise<Solo[]> => {
+    const response = await api.get(`/api/solo/propriedade/${propriedadeId}`);
+    return response.data;
+  },
+
+  // Buscar solo por ID
+  buscarSolo: async (id: string): Promise<Solo> => {
+    const response = await api.get(`/api/solo/${id}`);
+    return response.data;
+  },
+
+  // Criar solo
+  criarSolo: async (data: Partial<Solo>): Promise<Solo> => {
+    const response = await api.post('/api/solo', data);
+    return response.data;
+  },
+
+  // Atualizar solo
+  atualizarSolo: async (id: string, data: Partial<Solo>): Promise<Solo> => {
+    const response = await api.put(`/api/solo/${id}`, data);
+    return response.data;
+  },
+
+  // Deletar solo
+  deletarSolo: async (id: string): Promise<void> => {
+    await api.delete(`/api/solo/${id}`);
+  },
 };
+
+// ============================================
+// EXPORTAÇÕES ADICIONAIS
+// ============================================
+
+export default soloBiodiversidadeApi;

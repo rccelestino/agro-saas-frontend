@@ -1,5 +1,5 @@
 // src/modules/solo-biodiversidade/components/BiodiversidadeForm.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -15,9 +15,11 @@ import {
   Typography,
   Card,
   CardContent,
+  CircularProgress,
 } from '@mui/material';
 import { soloBiodiversidadeApi } from '../services/solo-biodiversidade.api';
-import { Biodiversidade, BiodiversidadeRequest } from "../types/solo.types";
+// ✅ Importação correta - usando o caminho relativo correto
+import type { Biodiversidade, BiodiversidadeRequest } from '../types/solo.types';
 
 interface BiodiversidadeFormProps {
   open: boolean;
@@ -37,35 +39,99 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Biodiversidade>>({
+    propriedadeId: propriedadeId,
     possuiReservaLegal: false,
     areaReservaLegal: 0,
     possuiApp: false,
     areaApp: 0,
+    especiesNativas: '',
+    especiesAmeacadas: '',
+    praticasConservacao: '',
     recuperacaoAreas: false,
     certificacaoBiodiversidade: false,
-    ...initialData,
-    propriedadeId,
+    scoreContribuicao: 0,
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...initialData,
+        propriedadeId: propriedadeId,
+      });
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        propriedadeId: propriedadeId,
+      }));
+    }
+  }, [initialData, propriedadeId]);
 
   const handleChange = (field: keyof Biodiversidade, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const validateForm = (): boolean => {
+    if (formData.possuiReservaLegal && (!formData.areaReservaLegal || formData.areaReservaLegal <= 0)) {
+      setError('Área da Reserva Legal é obrigatória quando ativada');
+      return false;
+    }
+    if (formData.possuiApp && (!formData.areaApp || formData.areaApp <= 0)) {
+      setError('Área de APP é obrigatória quando ativada');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
+    setError(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       setLoading(true);
-      setError(null);
       
+      const dadosParaEnviar: BiodiversidadeRequest = {
+        propriedadeId: String(formData.propriedadeId),
+        possuiReservaLegal: formData.possuiReservaLegal || false,
+        areaReservaLegal: formData.areaReservaLegal || 0,
+        possuiApp: formData.possuiApp || false,
+        areaApp: formData.areaApp || 0,
+        especiesNativas: formData.especiesNativas || undefined,
+        especiesAmeacadas: formData.especiesAmeacadas || undefined,
+        praticasConservacao: formData.praticasConservacao || undefined,
+        recuperacaoAreas: formData.recuperacaoAreas || false,
+        certificacaoBiodiversidade: formData.certificacaoBiodiversidade || false,
+        scoreContribuicao: formData.scoreContribuicao || 0,
+      };
+
+      console.log('📤 Enviando dados biodiversidade:', JSON.stringify(dadosParaEnviar, null, 2));
+
       if (initialData?.id) {
-        await soloBiodiversidadeApi.atualizarBiodiversidade(initialData.id, formData);
+        await soloBiodiversidadeApi.atualizarBiodiversidade(initialData.id, dadosParaEnviar);
       } else {
-        await soloBiodiversidadeApi.criarBiodiversidade(formData);
+        await soloBiodiversidadeApi.criarBiodiversidade(dadosParaEnviar);
       }
       
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao salvar biodiversidade');
+      console.error('❌ Erro ao salvar biodiversidade:', err);
+      
+      let mensagemErro = 'Erro ao salvar biodiversidade.';
+      
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          mensagemErro = err.response.data;
+        } else if (err.response.data.message) {
+          mensagemErro = err.response.data.message;
+        }
+      } else if (err.message) {
+        mensagemErro = err.message;
+      }
+      
+      setError(mensagemErro);
     } finally {
       setLoading(false);
     }
@@ -75,13 +141,15 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Box display="flex" alignItems="center" gap={1}>
-          <span>🌳</span>
-          {initialData ? 'Editar Biodiversidade' : 'Registrar Biodiversidade'}
+          <span style={{ fontSize: '24px' }}>🌳</span>
+          <Typography variant="h6">
+            {initialData ? 'Editar Biodiversidade' : 'Registrar Biodiversidade'}
+          </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         {error && (
-          <Alert severity="error" sx={{ mb: 2, mt: 1 }}>
+          <Alert severity="error" sx={{ mb: 2, mt: 1 }} onClose={() => setError(null)}>
             {error}
           </Alert>
         )}
@@ -94,8 +162,9 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={formData.possuiReservaLegal}
+                      checked={formData.possuiReservaLegal || false}
                       onChange={(e) => handleChange('possuiReservaLegal', e.target.checked)}
+                      disabled={loading}
                     />
                   }
                   label={
@@ -113,9 +182,11 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
                     fullWidth
                     type="number"
                     label="Área da Reserva Legal (ha)"
-                    value={formData.areaReservaLegal}
-                    onChange={(e) => handleChange('areaReservaLegal', parseFloat(e.target.value))}
+                    value={formData.areaReservaLegal || 0}
+                    onChange={(e) => handleChange('areaReservaLegal', parseFloat(e.target.value) || 0)}
                     sx={{ mt: 2 }}
+                    disabled={loading}
+                    inputProps={{ min: 0, step: 0.01 }}
                   />
                 )}
               </CardContent>
@@ -129,8 +200,9 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={formData.possuiApp}
+                      checked={formData.possuiApp || false}
                       onChange={(e) => handleChange('possuiApp', e.target.checked)}
+                      disabled={loading}
                     />
                   }
                   label={
@@ -148,9 +220,11 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
                     fullWidth
                     type="number"
                     label="Área de APP (ha)"
-                    value={formData.areaApp}
-                    onChange={(e) => handleChange('areaApp', parseFloat(e.target.value))}
+                    value={formData.areaApp || 0}
+                    onChange={(e) => handleChange('areaApp', parseFloat(e.target.value) || 0)}
                     sx={{ mt: 2 }}
+                    disabled={loading}
+                    inputProps={{ min: 0, step: 0.01 }}
                   />
                 )}
               </CardContent>
@@ -167,6 +241,7 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
               placeholder="Liste as espécies nativas encontradas na propriedade"
               value={formData.especiesNativas || ''}
               onChange={(e) => handleChange('especiesNativas', e.target.value)}
+              disabled={loading}
             />
           </Grid>
           
@@ -179,6 +254,7 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
               placeholder="Liste espécies ameaçadas de extinção presentes"
               value={formData.especiesAmeacadas || ''}
               onChange={(e) => handleChange('especiesAmeacadas', e.target.value)}
+              disabled={loading}
             />
           </Grid>
           
@@ -192,6 +268,7 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
               placeholder="Descreva as práticas de conservação adotadas"
               value={formData.praticasConservacao || ''}
               onChange={(e) => handleChange('praticasConservacao', e.target.value)}
+              disabled={loading}
             />
           </Grid>
           
@@ -199,8 +276,9 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
             <FormControlLabel
               control={
                 <Switch
-                  checked={formData.recuperacaoAreas}
+                  checked={formData.recuperacaoAreas || false}
                   onChange={(e) => handleChange('recuperacaoAreas', e.target.checked)}
+                  disabled={loading}
                 />
               }
               label="Projetos de recuperação de áreas degradadas"
@@ -211,22 +289,44 @@ export const BiodiversidadeForm: React.FC<BiodiversidadeFormProps> = ({
             <FormControlLabel
               control={
                 <Switch
-                  checked={formData.certificacaoBiodiversidade}
+                  checked={formData.certificacaoBiodiversidade || false}
                   onChange={(e) => handleChange('certificacaoBiodiversidade', e.target.checked)}
+                  disabled={loading}
                 />
               }
               label="Possui certificação de biodiversidade"
             />
           </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Score de Contribuição"
+              type="number"
+              inputProps={{ step: '0.01', min: '0', max: '100' }}
+              value={formData.scoreContribuicao || 0}
+              onChange={(e) => handleChange('scoreContribuicao', parseFloat(e.target.value) || 0)}
+              disabled={loading}
+            />
+          </Grid>
         </Grid>
       </DialogContent>
       
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" disabled={loading}>
-          {loading ? 'Salvando...' : 'Salvar'}
+      <DialogActions sx={{ p: 2, gap: 1 }}>
+        <Button onClick={onClose} disabled={loading} variant="outlined">
+          Cancelar
+        </Button>
+        <Button 
+          onClick={handleSubmit} 
+          variant="contained" 
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={20} /> : null}
+        >
+          {loading ? 'Salvando...' : initialData ? 'Atualizar' : 'Salvar'}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
+
+export default BiodiversidadeForm;

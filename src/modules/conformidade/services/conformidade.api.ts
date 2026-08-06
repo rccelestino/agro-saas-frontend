@@ -1,172 +1,73 @@
 // src/modules/conformidade/services/conformidade.api.ts
-import { api } from "../../../api/axios";
+import api from '../../../api/axios';
 
-// ============================================
-// INTERFACES
-// ============================================
-
-export interface Evidencia {
-  id: string;
-  entidade: string;
-  entidadeId: string;
-  tipo: string;
-  titulo?: string;
-  descricao?: string;
-  arquivoUrl: string;
-  metadata?: any;
-  latitude?: number;
-  longitude?: number;
-  endereco?: string;
-  dataEvidencia: string;
-  createdBy?: string;
-  createdAt: string;
-}
-
-export interface NaoConformidade {
+// Interface para Não Conformidade
+export interface NonConformity {
   id: string;
   propriedadeId: string;
   propriedadeNome?: string;
-  regraId?: string;
-  regraNome?: string;
-  codigo?: string;
+  codigo: string;
   titulo: string;
-  descricao?: string;
+  descricao: string;
   criticidade: 'BAIXA' | 'MEDIA' | 'ALTA' | 'CRITICA';
-  status: 'ABERTA' | 'EM_ANALISE' | 'EM_CORRECAO' | 'RESOLVIDA' | 'FECHADA';
+  status: 'ABERTA' | 'EM_ANDAMENTO' | 'RESOLVIDA' | 'FECHADA';
   pontuacaoDesconto: number;
   dataDetectada: string;
   dataPrazo?: string;
   dataResolucao?: string;
-  resolvidaPor?: string;
-  resolvidaPorNome?: string;
   observacoes?: string;
-  empresaId?: number;
-  created_at: string;
-  updated_at: string;
-  // Campos adicionais para exibição
-  evidenciaCount?: number;
-  planoAcaoCount?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface PlanoAcao {
-  id: string;
-  naoConformidadeId: string;
+export interface NonConformityRequest {
+  propriedadeId: string;
+  codigo: string;
   titulo: string;
-  descricao?: string;
-  prazo: string;
-  prioridade: 'BAIXA' | 'MEDIA' | 'ALTA';
-  responsavelId?: string;
-  responsavelNome?: string;
-  status: 'PENDENTE' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO';
-  dataInicio?: string;
-  dataConclusao?: string;
-  created_at: string;
-  updated_at: string;
+  descricao: string;
+  criticidade: 'BAIXA' | 'MEDIA' | 'ALTA' | 'CRITICA';
+  status?: 'ABERTA' | 'EM_ANDAMENTO' | 'RESOLVIDA' | 'FECHADA';
+  pontuacaoDesconto?: number;
+  dataPrazo?: string;
+  observacoes?: string;
 }
-
-// ============================================
-// EXPORTAR TUDO
-// ============================================
 
 export const conformidadeApi = {
-  // ============================================
-  // NÃO CONFORMIDADES
-  // ============================================
-
-  // Listar não conformidades
-  listar: async (params?: {
-    propriedadeId?: string;
-    status?: string;
-    criticidade?: string;
-    page?: number;
-    size?: number;
-  }): Promise<{ content: NaoConformidade[]; totalElements: number }> => {
-    const response = await api.get('/api/conformidade/nao-conformidades', { params });
-    return response.data;
+  // Listar não conformidades por propriedade
+  listarNonConformities: (propriedadeId: string | number) => {
+    console.log('📤 GET /api/conformidade/non-conformities?propriedadeId=' + propriedadeId);
+    return api.get<NonConformity[]>(`/api/conformidade/non-conformities?propriedadeId=${propriedadeId}`);
   },
 
   // Buscar não conformidade por ID
-  buscarPorId: async (id: string): Promise<NaoConformidade> => {
-    const response = await api.get(`/api/conformidade/nao-conformidades/${id}`);
-    return response.data;
+  buscarNonConformity: (id: string) => {
+    console.log('📤 GET /api/conformidade/non-conformities/' + id);
+    return api.get<NonConformity>(`/api/conformidade/non-conformities/${id}`);
   },
 
   // Criar não conformidade
-  criar: async (data: Partial<NaoConformidade>): Promise<NaoConformidade> => {
-    const response = await api.post('/api/conformidade/nao-conformidades', data);
-    return response.data;
+  criarNonConformity: (data: NonConformityRequest) => {
+    console.log('📤 POST /api/conformidade/non-conformities', data);
+    return api.post<NonConformity>('/api/conformidade/non-conformities', data);
   },
 
   // Atualizar não conformidade
-  atualizar: async (id: string, data: Partial<NaoConformidade>): Promise<NaoConformidade> => {
-    const response = await api.put(`/api/conformidade/nao-conformidades/${id}`, data);
-    return response.data;
-  },
-
-  // Atualizar status
-  atualizarStatus: async (id: string, status: string): Promise<NaoConformidade> => {
-    const response = await api.patch(`/api/conformidade/nao-conformidades/${id}/status`, { status });
-    return response.data;
+  atualizarNonConformity: (id: string, data: Partial<NonConformityRequest>) => {
+    console.log('📤 PUT /api/conformidade/non-conformities/' + id, data);
+    return api.put<NonConformity>(`/api/conformidade/non-conformities/${id}`, data);
   },
 
   // Deletar não conformidade
-  deletar: async (id: string): Promise<void> => {
-    await api.delete(`/api/conformidade/nao-conformidades/${id}`);
+  deletarNonConformity: (id: string) => {
+    console.log('📤 DELETE /api/conformidade/non-conformities/' + id);
+    return api.delete(`/api/conformidade/non-conformities/${id}`);
   },
 
-  // ============================================
-  // PLANOS DE AÇÃO
-  // ============================================
-
-  // Listar planos de ação de uma não conformidade
-  listarPlanosAcao: async (naoConformidadeId: string): Promise<PlanoAcao[]> => {
-    const response = await api.get(`/api/conformidade/nao-conformidades/${naoConformidadeId}/planos-acao`);
-    return response.data;
-  },
-
-  // Criar plano de ação
-  criarPlanoAcao: async (naoConformidadeId: string, data: Partial<PlanoAcao>): Promise<PlanoAcao> => {
-    const response = await api.post(`/api/conformidade/nao-conformidades/${naoConformidadeId}/planos-acao`, data);
-    return response.data;
-  },
-
-  // Atualizar plano de ação
-  atualizarPlanoAcao: async (id: string, data: Partial<PlanoAcao>): Promise<PlanoAcao> => {
-    const response = await api.put(`/api/conformidade/planos-acao/${id}`, data);
-    return response.data;
-  },
-
-  // Deletar plano de ação
-  deletarPlanoAcao: async (id: string): Promise<void> => {
-    await api.delete(`/api/conformidade/planos-acao/${id}`);
-  },
-
-  // ============================================
-  // EVIDÊNCIAS
-  // ============================================
-
-  // Listar evidências de uma entidade
-  listarEvidencias: async (entidade: string, entidadeId: string): Promise<Evidencia[]> => {
-    const response = await api.get(`/api/evidencias/entidade/${entidade}/${entidadeId}`);
-    return response.data;
-  },
-
-  // Criar evidência
-  criarEvidencia: async (data: FormData): Promise<Evidencia> => {
-    const response = await api.post('/api/evidencias', data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return response.data;
-  },
-
-  // Deletar evidência
-  deletarEvidencia: async (id: string): Promise<void> => {
-    await api.delete(`/api/evidencias/${id}`);
+  // Resolver não conformidade
+  resolverNonConformity: (id: string) => {
+    console.log('📤 POST /api/conformidade/non-conformities/' + id + '/resolver');
+    return api.post<NonConformity>(`/api/conformidade/non-conformities/${id}/resolver`);
   },
 };
-
-// ============================================
-// EXPORTAÇÕES ADICIONAIS
-// ============================================
 
 export default conformidadeApi;

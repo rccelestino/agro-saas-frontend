@@ -125,13 +125,9 @@ export type TexturaSolo = 'FINA' | 'MEDIA' | 'GROSSA';
 export type FertilidadeSolo = 'ALTA' | 'MEDIA' | 'BAIXA' | 'MUITO_BAIXA';
 
 // ============================================
-// EXPORTAÇÃO PADRÃO
+// OBJETO PARA EXPORTAÇÃO PADRÃO (opcional)
 // ============================================
-export default {
-  Solo: {} as Solo,
-  SoloRequest: {} as SoloRequest,
-  SoloResponse: {} as SoloResponse,
-  Biodiversidade: {} as Biodiversidade,
-  BiodiversidadeRequest: {} as BiodiversidadeRequest,
-  BiodiversidadeResponse: {} as BiodiversidadeResponse,
-};
+// Removido o export default para evitar conflitos
+// Se precisar de export default, use:
+// const tipos = { Solo, SoloRequest, SoloResponse, Biodiversidade, BiodiversidadeRequest, BiodiversidadeResponse };
+// export default tipos;

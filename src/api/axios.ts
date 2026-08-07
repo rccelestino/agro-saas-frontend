@@ -5,27 +5,27 @@ import axios from 'axios';
 // CONFIGURAÇÃO DA BASE URL
 // ============================================
 
-// 📌 Prioridade: 
-// 1. Variável de ambiente (VITE_API_URL ou REACT_APP_API_URL)
-// 2. URL relativa para produção (Amplify)
-// 3. Localhost para desenvolvimento
 const getBaseURL = () => {
-  // Para Vite (vite.config.ts)
+  // 🔧 1. PRIMEIRO: Variável de ambiente (Amplify)
   if (import.meta.env?.VITE_API_URL) {
+    console.log('📌 Usando VITE_API_URL:', import.meta.env.VITE_API_URL);
     return import.meta.env.VITE_API_URL;
   }
   
-  // Para Create React App (fallback)
+  // 🔧 2. SEGUNDO: Create React App (fallback)
   if (import.meta.env?.REACT_APP_API_URL) {
+    console.log('📌 Usando REACT_APP_API_URL:', import.meta.env.REACT_APP_API_URL);
     return import.meta.env.REACT_APP_API_URL;
   }
   
-  // Para produção no Amplify - usar URL relativa
+  // 🔧 3. TERCEIRO: Produção no Amplify (URL relativa)
   if (import.meta.env?.PROD) {
+    console.log('📌 Usando URL relativa para produção: /api');
     return '/api';
   }
   
-  // Fallback para desenvolvimento
+  // 🔧 4. QUARTO: Desenvolvimento local
+  console.log('📌 Usando localhost para desenvolvimento');
   return 'http://localhost:8080/api';
 };
 

@@ -84,6 +84,13 @@ const PerdasProducaoPage = lazy(() => import("../pages/campo/PerdasProducaoPage"
 const RegistroClimaticoPage = lazy(() => import("../pages/campo/RegistroClimaticoPage"));
 const CompostagemPage = lazy(() => import("../pages/campo/CompostagemPage"));
 
+// =====================================================
+// 🐔 MÓDULO AVICULTURA
+// =====================================================
+const DashboardAviculturaPage = lazy(() => import("../modules/avicultura/pages/DashboardAvicultura"));
+const RegistroOvosList = lazy(() => import("../modules/avicultura/components/RegistroOvosList"));
+const GalpaoList = lazy(() => import("../modules/avicultura/components/GalpaoList"));
+
 // Componente de loading
 const PageLoader = () => (
   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
@@ -273,6 +280,31 @@ export default function AppRoutes() {
         <Route path="compostagem" element={
           <Suspense fallback={<PageLoader />}>
             <CompostagemPage />
+          </Suspense>
+        } />
+
+        {/* ===================================================== */}
+        {/* 🐔 MÓDULO AVICULTURA */}
+        {/* ===================================================== */}
+        
+        {/* Dashboard Avicultura */}
+        <Route path="avicultura" element={
+          <Suspense fallback={<PageLoader />}>
+            <DashboardAviculturaPage />
+          </Suspense>
+        } />
+
+        {/* Registros de Ovos */}
+        <Route path="avicultura/registros" element={
+          <Suspense fallback={<PageLoader />}>
+            <RegistroOvosList />
+          </Suspense>
+        } />
+
+        {/* Galpões */}
+        <Route path="avicultura/galoes" element={
+          <Suspense fallback={<PageLoader />}>
+            <GalpaoList />
           </Suspense>
         } />
 

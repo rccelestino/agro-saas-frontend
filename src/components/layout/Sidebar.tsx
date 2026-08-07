@@ -41,6 +41,8 @@ import {
   Thermostat as ThermostatIcon,
   Compost as CompostIcon,
   ReportProblem as ReportProblemIcon,
+  Egg as EggIcon, // 🐔 Novo ícone
+  Pets as PetsIcon, // 🐔 Novo ícone
 } from "@mui/icons-material";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -62,6 +64,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
   const [openSoloBiodiversidade, setOpenSoloBiodiversidade] = useState(false);
   const [openPmoMenu, setOpenPmoMenu] = useState(false);
   const [openCadernoCampo, setOpenCadernoCampo] = useState(false);
+  const [openAvicultura, setOpenAvicultura] = useState(false); // 🐔 Novo estado
 
   const handleToggleSoloBiodiversidade = () => {
     setOpenSoloBiodiversidade(!openSoloBiodiversidade);
@@ -73,6 +76,11 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
 
   const handleToggleCadernoCampo = () => {
     setOpenCadernoCampo(!openCadernoCampo);
+  };
+
+  // 🐔 Função para toggle do menu Avicultura
+  const handleToggleAvicultura = () => {
+    setOpenAvicultura(!openAvicultura);
   };
 
   const handleNavigation = (path: string) => {
@@ -215,7 +223,6 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
 
         <Collapse in={openCadernoCampo} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            {/* Minhas Atividades */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/caderno-campo")}
@@ -228,8 +235,6 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemText primary="Minhas Atividades" />
               </ListItemButton>
             </ListItem>
-            
-            {/* Nova Atividade */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/caderno-campo/nova")}
@@ -242,8 +247,6 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemText primary="Nova Atividade" />
               </ListItemButton>
             </ListItem>
-            
-            {/* Meus Talhões */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/talhoes")}
@@ -256,10 +259,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemText primary="Meus Talhões" />
               </ListItemButton>
             </ListItem>
-            
             <Divider sx={{ my: 0.5 }} />
-            
-            {/* Perdas e Danos - NOVO */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/perdas")}
@@ -269,14 +269,9 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemIcon sx={{ minWidth: 40 }}>
                   <ReportProblemIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Perdas e Danos" 
-                  primaryTypographyProps={{ fontSize: '0.85rem' }}
-                />
+                <ListItemText primary="Perdas e Danos" />
               </ListItemButton>
             </ListItem>
-            
-            {/* Registros Climáticos - NOVO */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/clima")}
@@ -286,14 +281,9 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemIcon sx={{ minWidth: 40 }}>
                   <ThermostatIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Registros Climáticos" 
-                  primaryTypographyProps={{ fontSize: '0.85rem' }}
-                />
+                <ListItemText primary="Registros Climáticos" />
               </ListItemButton>
             </ListItem>
-            
-            {/* Compostagem - NOVO */}
             <ListItem disablePadding sx={{ pl: 4 }}>
               <ListItemButton
                 onClick={() => handleNavigation("/compostagem")}
@@ -303,16 +293,13 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
                 <ListItemIcon sx={{ minWidth: 40 }}>
                   <CompostIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Compostagem" 
-                  primaryTypographyProps={{ fontSize: '0.85rem' }}
-                />
+                <ListItemText primary="Compostagem" />
               </ListItemButton>
             </ListItem>
           </List>
         </Collapse>
 
-        {/* Pessoas (existente) */}
+        {/* Pessoas */}
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton
             onClick={() => handleNavigation("/pessoas")}
@@ -344,7 +331,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
           </ListItemButton>
         </ListItem>
 
-        {/* Módulo Solo e Biodiversidade (expansível) */}
+        {/* Módulo Solo e Biodiversidade */}
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton
             onClick={handleToggleSoloBiodiversidade}
@@ -402,7 +389,90 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
           </ListItemButton>
         </ListItem>
 
-        {/* Módulo Relatórios (existente) */}
+        {/* ===================================================== */}
+        {/* 🐔 MÓDULO AVICULTURA */}
+        {/* ===================================================== */}
+        <ListItem disablePadding sx={{ mb: 0.5 }}>
+          <ListItemButton
+            onClick={handleToggleAvicultura}
+            selected={isParentSelected([
+              "/avicultura",
+              "/avicultura/registros",
+              "/avicultura/galoes"
+            ])}
+            sx={{ borderRadius: 2 }}
+          >
+            <ListItemIcon sx={{ 
+              color: isParentSelected([
+                "/avicultura",
+                "/avicultura/registros",
+                "/avicultura/galoes"
+              ]) ? "primary.main" : "text.secondary", 
+              minWidth: 40 
+            }}>
+              <EggIcon />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Avicultura" 
+              primaryTypographyProps={{ fontWeight: 500 }}
+            />
+            <Chip 
+              label="NOVO" 
+              size="small" 
+              color="success" 
+              sx={{ 
+                height: 18, 
+                fontSize: '0.55rem',
+                fontWeight: 700,
+                mr: 0.5
+              }}
+            />
+            {openAvicultura ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+        </ListItem>
+
+        <Collapse in={openAvicultura} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => handleNavigation("/avicultura")}
+                selected={isSelected("/avicultura")}
+                sx={{ borderRadius: 2 }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <DashboardIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Dashboard" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => handleNavigation("/avicultura/registros")}
+                selected={isSelected("/avicultura/registros")}
+                sx={{ borderRadius: 2 }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <ListAltIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Registros de Ovos" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => handleNavigation("/avicultura/galoes")}
+                selected={isSelected("/avicultura/galoes")}
+                sx={{ borderRadius: 2 }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <PetsIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Galpões" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Collapse>
+
+        {/* Módulo Relatórios */}
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton
             onClick={() => handleNavigation("/relatorios")}
@@ -417,7 +487,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
         </ListItem>
 
         {/* ===================================================== */}
-        {/* PLANOS PMO (expansível com nova opção de importar) */}
+        {/* PLANOS PMO */}
         {/* ===================================================== */}
         <ListItem disablePadding sx={{ mb: 0.5 }}>
           <ListItemButton

@@ -38,6 +38,7 @@ export type PropriedadeSimplificada = {
 };
 
 export async function login(credentials: LoginRequest) {
+  // ✅ SEM BARRA NO FINAL
   const { data } = await api.post<LoginResponse>('/auth/login', credentials);
   
   // Salvar token e user no localStorage
@@ -63,16 +64,19 @@ export async function login(credentials: LoginRequest) {
 }
 
 export async function register(userData: RegisterRequest) {
+  // ✅ SEM BARRA NO FINAL
   const { data } = await api.post<MessageResponse>('/auth/register', userData);
   return data;
 }
 
 export async function forgotPassword(email: string) {
+  // ✅ SEM BARRA NO FINAL
   const { data } = await api.post<MessageResponse>('/auth/forgot-password', { email });
   return data;
 }
 
 export async function resetPassword(token: string, novaSenha: string, confirmarSenha: string): Promise<MessageResponse> {
+  // ✅ SEM BARRA NO FINAL
   const response = await api.post<MessageResponse>("/auth/reset-password", { token, novaSenha, confirmarSenha });
   return response.data;
 }
@@ -80,6 +84,7 @@ export async function resetPassword(token: string, novaSenha: string, confirmarS
 export async function logout(): Promise<void> {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  // ✅ SEM BARRA NO FINAL
   await api.post("/auth/logout");
 }
 

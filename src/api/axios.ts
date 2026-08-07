@@ -6,27 +6,36 @@ import axios from 'axios';
 // ============================================
 
 const getBaseURL = () => {
+  let url = '';
+  
   // 🔧 1. PRIMEIRO: Variável de ambiente (Amplify)
   if (import.meta.env?.VITE_API_URL) {
-    console.log('📌 Usando VITE_API_URL:', import.meta.env.VITE_API_URL);
-    return import.meta.env.VITE_API_URL;
+    url = import.meta.env.VITE_API_URL;
+    console.log('📌 Usando VITE_API_URL:', url);
   }
-  
   // 🔧 2. SEGUNDO: Create React App (fallback)
-  if (import.meta.env?.REACT_APP_API_URL) {
-    console.log('📌 Usando REACT_APP_API_URL:', import.meta.env.REACT_APP_API_URL);
-    return import.meta.env.REACT_APP_API_URL;
+  else if (import.meta.env?.REACT_APP_API_URL) {
+    url = import.meta.env.REACT_APP_API_URL;
+    console.log('📌 Usando REACT_APP_API_URL:', url);
   }
-  
   // 🔧 3. TERCEIRO: Produção no Amplify (URL relativa)
-  if (import.meta.env?.PROD) {
+  else if (import.meta.env?.PROD) {
+    url = '/api';
     console.log('📌 Usando URL relativa para produção: /api');
-    return '/api';
+  }
+  // 🔧 4. QUARTO: Desenvolvimento local
+  else {
+    url = 'http://localhost:8080/api';
+    console.log('📌 Usando localhost para desenvolvimento');
   }
   
-  // 🔧 4. QUARTO: Desenvolvimento local
-  console.log('📌 Usando localhost para desenvolvimento');
-  return 'http://localhost:8080/api';
+  // ✅ REMOVER BARRA NO FINAL
+  if (url.endsWith('/')) {
+    url = url.slice(0, -1);
+    console.log('📌 Removida barra final:', url);
+  }
+  
+  return url;
 };
 
 // ============================================

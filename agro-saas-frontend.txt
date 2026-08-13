@@ -3,28 +3,30 @@
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend
 
-13/06/2026  15:04    <DIR>          .
-13/06/2026  15:04    <DIR>          ..
-31/05/2026  17:34                39 .env.production
+07/08/2026  13:57    <DIR>          .
+07/08/2026  13:57    <DIR>          ..
+07/08/2026  17:24                39 .env.production
 17/01/2026  12:31               277 .gitignore
 13/06/2026  15:04               106 agro-saas-frontend.code-workspace
-07/08/2026  08:55                80 agro-saas-frontend.txt
+11/08/2026  15:21                 0 agro-saas-frontend.txt
 17/01/2026  12:31                 0 agrodb_dll.sql
-07/08/2026  08:20    <DIR>          docs
+07/08/2026  13:55    <DIR>          dist
+07/08/2026  13:57           703.929 dist.zip
+07/08/2026  11:28    <DIR>          docs
 17/01/2026  12:31               639 eslint.config.js
 17/01/2026  12:31               380 index.html
-16/06/2026  20:45    <DIR>          node_modules
-16/06/2026  20:45           186.464 package-lock.json
-16/06/2026  20:45             1.255 package.json
+07/08/2026  09:59    <DIR>          node_modules
+07/08/2026  09:59           186.792 package-lock.json
+07/08/2026  13:53             1.232 package.json
 17/01/2026  12:31    <DIR>          public
 17/01/2026  12:31             2.670 README.md
-16/06/2026  20:36    <DIR>          src
+07/08/2026  09:34    <DIR>          src
 17/01/2026  12:31               760 tsconfig.app.json
 17/01/2026  12:31               126 tsconfig.json
 17/01/2026  12:31               679 tsconfig.node.json
 12/04/2026  19:28    <DIR>          uploads
 17/01/2026  12:31               168 vite.config.ts
-              14 arquivo(s)        193.643 bytes
+              15 arquivo(s)        897.797 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\public
 
@@ -35,8 +37,8 @@
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src
 
-16/06/2026  20:36    <DIR>          .
-16/06/2026  20:36    <DIR>          ..
+07/08/2026  09:34    <DIR>          .
+07/08/2026  09:34    <DIR>          ..
 16/06/2026  20:33    <DIR>          api
 17/01/2026  12:31    <DIR>          app
 17/01/2026  12:31               648 App.css
@@ -44,6 +46,7 @@
 21/04/2026  09:39    <DIR>          assets
 17/01/2026  12:31    <DIR>          auth
 18/06/2026  10:19    <DIR>          components
+07/08/2026  09:34    <DIR>          constants
 15/05/2026  09:00    <DIR>          contexts
 18/06/2026  11:31    <DIR>          hooks
 17/01/2026  12:31             1.222 index.css
@@ -61,8 +64,8 @@
 16/06/2026  20:33    <DIR>          .
 16/06/2026  20:33    <DIR>          ..
 17/05/2026  11:45             6.472 admin.api.ts
-13/05/2026  11:42             2.545 auth.api.ts
-08/06/2026  11:14               682 axios.ts
+07/08/2026  16:14             2.690 auth.api.ts
+07/08/2026  16:14             8.101 axios.ts
 18/06/2026  20:50             7.554 campo.api.ts
 17/01/2026  12:31               365 dashboard.api.ts
 07/06/2026  20:37             2.187 documentIntelligence.api.ts
@@ -92,15 +95,15 @@
 17/01/2026  12:31               410 propriedade.api.ts
 21/04/2026  15:29               334 queryClient.ts
 08/06/2026  17:08               353 template.api.ts
-              32 arquivo(s)         60.222 bytes
+              32 arquivo(s)         67.786 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\app
 
 17/01/2026  12:31    <DIR>          .
 17/01/2026  12:31    <DIR>          ..
 06/08/2026  17:14            17.355 routes.tsx
-18/06/2026  11:50            25.162 theme.ts
-               2 arquivo(s)         42.517 bytes
+07/08/2026  09:22             5.773 theme.ts
+               2 arquivo(s)         23.128 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\assets
 
@@ -124,35 +127,50 @@
 
 18/06/2026  10:19    <DIR>          .
 18/06/2026  10:19    <DIR>          ..
-28/06/2026  17:42    <DIR>          common
+07/08/2026  09:33    <DIR>          common
 15/05/2026  07:56             2.333 CompanySelector.tsx
 14/05/2026  17:45             3.285 ConfirmDialog.tsx
 13/04/2026  14:45             9.910 GeolocalizacaoInput.tsx
-17/01/2026  12:31    <DIR>          layout
+07/08/2026  09:32    <DIR>          layout
 13/06/2026  10:29             4.147 ProcessingStatusAdvanced.tsx
 12/05/2026  12:39             1.635 PropertySelector.tsx
                5 arquivo(s)         21.310 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\components\common
 
-28/06/2026  17:42    <DIR>          .
-28/06/2026  17:42    <DIR>          ..
+07/08/2026  09:33    <DIR>          .
+07/08/2026  09:33    <DIR>          ..
+07/08/2026  09:33             3.610 AdaptiveDataDisplay.tsx
+07/08/2026  09:33             1.831 AdaptiveGrid.tsx
 28/06/2026  17:42             2.785 ConfirmDialog.tsx
 18/06/2026  10:45               254 index.ts
+07/08/2026  09:14             1.135 LoadingSpinner.tsx
 18/06/2026  10:42             3.681 PageHeader.tsx
+07/08/2026  09:13             1.682 ResponsiveCard.tsx
 18/06/2026  11:18             2.213 ResponsiveComponents.tsx
-18/06/2026  10:45             1.535 ResponsiveContainer.tsx
+07/08/2026  09:12               871 ResponsiveContainer.tsx
+07/08/2026  09:13             4.250 ResponsiveTable.tsx
 18/06/2026  10:43             2.987 StatCard.tsx
-               6 arquivo(s)         13.455 bytes
+              11 arquivo(s)         25.299 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\components\layout
 
-17/01/2026  12:31    <DIR>          .
-17/01/2026  12:31    <DIR>          ..
+07/08/2026  09:32    <DIR>          .
+07/08/2026  09:32    <DIR>          ..
+07/08/2026  09:31             1.800 AdaptiveLayout.tsx
 17/06/2026  09:09             9.303 DashboardLayout.tsx
+07/08/2026  09:32             4.373 DesktopSidebar.tsx
 17/01/2026  12:31               755 MobileTopBar.tsx
 06/08/2026  17:13            22.640 Sidebar.tsx
-               3 arquivo(s)         32.698 bytes
+07/08/2026  09:32             3.044 TopBar.tsx
+               6 arquivo(s)         41.915 bytes
+
+ Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\constants
+
+07/08/2026  09:34    <DIR>          .
+07/08/2026  09:34    <DIR>          ..
+07/08/2026  09:34             1.176 spacing.ts
+               1 arquivo(s)          1.176 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\contexts
 
@@ -172,8 +190,8 @@
 16/06/2026  21:13             4.008 useOfflineSync.ts
 17/05/2026  11:52             1.528 usePmoPlano.ts
 17/06/2026  19:43             2.233 usePropriedadeUsuario.ts
-18/06/2026  10:24             1.041 useResponsive.ts
-               8 arquivo(s)         12.820 bytes
+07/08/2026  09:14             1.507 useResponsive.ts
+               8 arquivo(s)         13.286 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\modules
 
@@ -237,7 +255,7 @@
 06/08/2026  17:17             5.276 GalpaoForm.tsx
 06/08/2026  17:18             8.883 GalpaoList.tsx
 06/08/2026  17:17            13.720 RegistroOvosForm.tsx
-07/08/2026  08:37            13.856 RegistroOvosList.tsx
+07/08/2026  09:10            13.856 RegistroOvosList.tsx
                4 arquivo(s)         41.735 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\modules\avicultura\pages
@@ -290,9 +308,9 @@
 29/05/2026  15:20    <DIR>          .
 29/05/2026  15:20    <DIR>          ..
 29/05/2026  15:20    <DIR>          components
-29/05/2026  15:20             7.392 DashboardHome.tsx
+07/08/2026  09:19            21.148 DashboardHome.tsx
 29/05/2026  15:18    <DIR>          services
-               1 arquivo(s)          7.392 bytes
+               1 arquivo(s)         21.148 bytes
 
  Pasta de C:\Users\Acer\eclipse-workspace\agro-saas-frontend\src\modules\dashboard\components
 
@@ -541,5 +559,5 @@
                0 arquivo(s)              0 bytes
 
      Total de Arquivos na Lista:
-           73394 arquivo(s)    324.662.251 bytes
-            8291 pasta(s)   340.513.570.816 bytes dispon¡veis
+           73710 arquivo(s)    318.111.250 bytes
+            8696 pasta(s)   337.539.825.664 bytes dispon¡veis

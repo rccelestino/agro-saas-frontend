@@ -69,10 +69,16 @@ api.interceptors.request.use(
       config.headers['X-User-Email'] = localStorage.getItem('userEmail') || '';
     }
     
-    // Adicionar tenant ID se disponível
+    // Adicionar contexto do tenant
     const empresaId = localStorage.getItem('empresaId');
     if (empresaId) {
       config.headers['X-Tenant-ID'] = empresaId;
+    }
+
+    // Adicionar propriedade atualmente selecionada
+    const propriedadeAtualId = localStorage.getItem('propriedadeAtualId');
+    if (propriedadeAtualId) {
+      config.headers['X-Propriedade-Id'] = propriedadeAtualId;
     }
     
     // Log da requisição (apenas em desenvolvimento)

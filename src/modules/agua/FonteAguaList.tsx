@@ -29,7 +29,18 @@ export const FonteAguaList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fontes, setFontes] = useState<FonteAgua[]>([]);
-  const [propriedadeId] = useState('1'); // TODO: Buscar propriedade do contexto
+  
+  const [propriedadeId, setPropriedadeId] =
+      useState('');
+
+  useEffect(() => {
+      const id =
+          localStorage.getItem('propriedadeAtualId');
+
+      if (id) {
+          setPropriedadeId(id);
+      }
+  }, []);
   
   // Estado do formulário
   const [openForm, setOpenForm] = useState(false);
@@ -51,7 +62,10 @@ export const FonteAguaList: React.FC = () => {
     
     try {
       setLoading(true);
+
       const response = await aguaService.listarFontes(propriedadeId);
+
+
       setFontes(response.data || []);
       setError(null);
     } catch (err) {
@@ -63,8 +77,11 @@ export const FonteAguaList: React.FC = () => {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (propriedadeId) {
+      console.log('🏠 Carregando fontes para propriedade:', propriedadeId);
+      loadData();
+    }
+  }, [propriedadeId]);
 
   // Abrir formulário para criar nova fonte
   const handleOpenCreate = () => {

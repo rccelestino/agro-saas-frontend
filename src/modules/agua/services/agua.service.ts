@@ -20,7 +20,7 @@ export const aguaService = {
     api.put<FonteAgua>(`/agua/fontes/${id}`, data),
   
   excluirFonte: (id: string) => 
-    api.delete(`//agua/fontes/${id}`),
+    api.delete(`/agua/fontes/${id}`),
   
   // Análises - mantido como está
   listarAnalises: (fonteAguaId: string) => 

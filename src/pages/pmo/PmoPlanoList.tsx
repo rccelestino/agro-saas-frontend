@@ -146,7 +146,7 @@ export default function PmoPlanoList() {
         onClick={() => navigate("/pmo/planos/novo")}
         fullWidth={isMobile}
         size={isSmallMobile ? "small" : "medium"}
-        sx={{ py: isSmallMobile ? 0.5 : 1, alignSelf: "flex-start" }}
+        sx={{ minHeight: 44, width: { xs: '100%', sm: 200 }, alignSelf: { xs: 'stretch', sm: 'flex-start' } }}
       >
         Novo Plano
       </Button>
@@ -267,7 +267,7 @@ export default function PmoPlanoList() {
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1 }}>
                         <Agriculture color="primary" fontSize={isSmallMobile ? "small" : "medium"} />
                         <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle1" fontWeight="bold" fontSize={isSmallMobile ? "0.85rem" : "1rem"}>
+                          <Typography variant="subtitle1" fontWeight="bold" fontSize="1rem">
                             Plano #{plano.id}
                           </Typography>
                           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
@@ -303,10 +303,9 @@ export default function PmoPlanoList() {
                               </Typography>
                             </Box>
                           )}
-                          <Box sx={{ display: "flex", gap: 1, mt: 1, flexDirection: isSmallMobile ? "column" : "row" }}>
+                          <Box sx={{ display: "flex", gap: 1, mt: 1, flexDirection: { xs: 'column', sm: 'row' }, '& .MuiButton-root': { minHeight: 44 } }}>
                             <Button 
                               variant="contained" 
-                              size="small" 
                               startIcon={<VisibilityIcon />} 
                               onClick={() => navigate(`/pmo/planos/${plano.id}`)}
                               fullWidth
@@ -316,7 +315,6 @@ export default function PmoPlanoList() {
                             <Button 
                               variant="outlined" 
                               color="error" 
-                              size="small" 
                               startIcon={<DeleteIcon />} 
                               onClick={() => openDeleteDialog(plano)}
                               disabled={deleting === plano.id}
@@ -350,7 +348,7 @@ export default function PmoPlanoList() {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }} fontSize={isMobile ? "0.75rem" : "0.875rem"}>
         Clique em "Novo Plano" para começar.
       </Typography>
-      <Button variant="contained" onClick={() => navigate("/pmo/planos/novo")} size={isMobile ? "small" : "medium"}>
+      <Button variant="contained" onClick={() => navigate("/pmo/planos/novo")} sx={{ minHeight: 44, width: { xs: '100%', sm: 200 } }}>
         Criar primeiro plano
       </Button>
     </Paper>
@@ -395,10 +393,10 @@ export default function PmoPlanoList() {
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button onClick={closeDeleteDialog} variant="outlined" color="primary" size={isMobile ? "small" : "medium"}>
+          <Button onClick={closeDeleteDialog} variant="outlined" color="primary">
             Cancelar
           </Button>
-          <Button onClick={handleConfirmDelete} variant="contained" color="error" size={isMobile ? "small" : "medium"}>
+          <Button onClick={handleConfirmDelete} variant="contained" color="error">
             Excluir
           </Button>
         </DialogActions>

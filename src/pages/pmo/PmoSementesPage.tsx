@@ -425,7 +425,12 @@ export default function PmoSementesPage() {
   }
 
   return (
-    <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+    <Paper sx={{
+      p: { xs: 2, sm: 3 },
+      width: '100%',
+      '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem !important' },
+      '& .MuiInputLabel-root, & .MuiFormControlLabel-label': { fontSize: '0.875rem !important' },
+    }}>
       <Typography variant="h6" gutterBottom>
         Sementes e Mudas
       </Typography>

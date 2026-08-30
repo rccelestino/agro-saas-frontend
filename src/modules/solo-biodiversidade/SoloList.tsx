@@ -164,9 +164,9 @@ export default function SoloList() {
 
   return (
     <>
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+      <Box sx={{ maxWidth: 1440, mx: 'auto', px: { xs: 1.5, sm: 2, md: 3 }, py: { xs: 2, sm: 3 }, width: '100%' }}>
         {/* Cabeçalho */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
             <Typography variant="h4" fontWeight="bold" color="primary.main">
               🌱 Análise de Solo
@@ -179,7 +179,7 @@ export default function SoloList() {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleOpenCreate}
-            sx={{ borderRadius: 2 }}
+            sx={{ borderRadius: 2, minHeight: 44, width: { xs: '100%', sm: 200 } }}
           >
             Novo Solo
           </Button>
@@ -205,16 +205,17 @@ export default function SoloList() {
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleOpenCreate}
-              sx={{ borderRadius: 2 }}
+              sx={{ borderRadius: 2, minHeight: 44, width: { xs: '100%', sm: 200 } }}
             >
               Nova Análise
             </Button>
           </Paper>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }} alignItems="stretch">
             {items.map((item) => (
-              <Grid item xs={12} md={6} lg={4} key={item.id}>
+              <Grid item xs={12} sm={6} md={4} key={item.id} sx={{ display: 'flex' }}>
                 <Card sx={{ 
+                  width: '100%',
                   borderRadius: 2, 
                   height: '100%', 
                   display: 'flex', 
@@ -227,7 +228,7 @@ export default function SoloList() {
                 }}>
                   <CardContent sx={{ flex: 1 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                      <Typography variant="h6" fontWeight="bold" noWrap>
+                      <Typography variant="h6" fontWeight="bold" sx={{ overflowWrap: 'anywhere' }}>
                         {item.nome || 'Solo não nomeado'}
                       </Typography>
                       <Chip
@@ -289,7 +290,7 @@ export default function SoloList() {
                       )}
                     </Stack>
                   </CardContent>
-                  <CardActions sx={{ px: 2, pb: 2, pt: 0, justifyContent: 'flex-end' }}>
+                  <CardActions sx={{ px: 2, pb: 2, pt: 0, justifyContent: 'flex-end', '& .MuiIconButton-root': { minWidth: 44, minHeight: 44 } }}>
                     <Tooltip title="Editar">
                       <IconButton 
                         size="small" 

@@ -177,7 +177,17 @@ export const NonConformityForm: React.FC<NonConformityFormProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      sx={{
+        '& .MuiDialogContent-root': { px: { xs: 2, sm: 3 }, py: { xs: 1.5, sm: 2 } },
+        '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem' },
+        '& .MuiInputLabel-root': { fontSize: '0.875rem' },
+      }}
+    >
       <DialogTitle>
         <Box display="flex" alignItems="center" gap={1}>
           <span style={{ fontSize: '24px' }}>⚠️</span>
@@ -281,7 +291,7 @@ export const NonConformityForm: React.FC<NonConformityFormProps> = ({
               value={formData.pontuacaoDesconto || 0}
               onChange={(e) => handleChange('pontuacaoDesconto', parseInt(e.target.value) || 0)}
               disabled={loading}
-              inputProps={{ min: 0, max: 100 }}
+              inputProps={{ min: 0, max: 100, inputMode: 'numeric' }}
             />
           </Grid>
 
@@ -314,7 +324,7 @@ export const NonConformityForm: React.FC<NonConformityFormProps> = ({
         </Grid>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2, gap: 1 }}>
+      <DialogActions sx={{ p: { xs: 2, sm: 3 }, pt: 1, gap: 1 }}>
         <Button onClick={onClose} disabled={loading} variant="outlined">
           Cancelar
         </Button>

@@ -17,6 +17,9 @@ import {
   CircularProgress,
   Tooltip,
   useTheme,
+  useMediaQuery,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -34,6 +37,7 @@ import { NonConformityForm } from './components/NonConformityForm'; // ✅ Impor
 
 export const NonConformitiesList: React.FC = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { propriedadeAtual } = useAuth();
   
   const [items, setItems] = useState<NonConformity[]>([]);
@@ -195,9 +199,9 @@ export const NonConformitiesList: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+      <Box sx={{ maxWidth: 1440, mx: 'auto', px: { xs: 1.5, sm: 2, md: 3 }, py: { xs: 2, sm: 3 }, width: '100%' }}>
         {/* Cabeçalho */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
             <Typography variant="h4" fontWeight="bold" color="error.main">
               ⚠️ Não Conformidades
@@ -206,11 +210,10 @@ export const NonConformitiesList: React.FC = () => {
               {propriedadeAtual?.nome} • {items.length} registro(s)
             </Typography>
           </Box>
-          <Box display="flex" gap={1}>
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={1.5} width={{ xs: '100%', sm: 'auto' }} sx={{ '& .MuiButton-root': { minHeight: 44, width: { xs: '100%', sm: 200 } } }}>
             <Tooltip title="Atualizar lista">
               <Button
                 variant="outlined"
-                size="small"
                 startIcon={<RefreshIcon />}
                 onClick={carregarDados}
                 disabled={loading}
@@ -254,6 +257,32 @@ export const NonConformitiesList: React.FC = () => {
               Nova Não Conformidade
             </Button>
           </Paper>
+        ) : isMobile ? (
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1.5 }}>
+            {items.map((item) => (
+              <Card key={item.id} variant="outlined" sx={{ width: '100%' }}>
+                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1} mb={1.5}>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="caption" color="text.secondary">{item.codigo || 'Sem código'}</Typography>
+                      <Typography fontWeight="bold" sx={{ overflowWrap: 'anywhere' }}>{item.titulo}</Typography>
+                    </Box>
+                    {getCriticidadeChip(item.criticidade)}
+                  </Box>
+                  {item.descricao && <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>{item.descricao}</Typography>}
+                  <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
+                    {getStatusChip(item.status)}
+                    <Chip size="small" variant="outlined" label={`Detectada: ${item.dataDetectada ? new Date(item.dataDetectada).toLocaleDateString('pt-BR') : '-'}`} />
+                    {item.dataPrazo && <Chip size="small" variant="outlined" label={`Prazo: ${new Date(item.dataPrazo).toLocaleDateString('pt-BR')}`} />}
+                  </Box>
+                  <Box display="flex" gap={1} sx={{ '& .MuiButton-root': { flex: 1, minHeight: 44 } }}>
+                    <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleOpenEdit(item)}>Editar</Button>
+                    <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => handleDeleteClick(item)}>Excluir</Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
         ) : (
           <TableContainer component={Paper} variant="outlined">
             <Table size="medium">

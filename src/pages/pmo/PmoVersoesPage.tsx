@@ -81,7 +81,7 @@ export default function PmoVersoesPage() {
   };
 
   return (
-    <Paper sx={{ p: 3 }}>
+    <Paper sx={{ p: { xs: 2, sm: 3 }, width: '100%' }}>
       {/* Header responsivo */}
       <Box
         display="flex"
@@ -102,6 +102,7 @@ export default function PmoVersoesPage() {
           gap={1}
           flexDirection={{ xs: "column", sm: "row" }}
           alignItems={{ xs: "stretch", sm: "center" }}
+          sx={{ '& .MuiButton-root': { minHeight: 44, width: { xs: '100%', sm: 180 } } }}
         >
           <Button
             variant="outlined"
@@ -153,7 +154,7 @@ export default function PmoVersoesPage() {
                   </Typography>
                 </CardContent>
 
-                <CardActions sx={{ pt: 0, px: 2, pb: 2 }}>
+                <CardActions sx={{ pt: 0, px: 2, pb: 2, '& .MuiButton-root': { minHeight: 44 } }}>
                   <Button
                     size="small"
                     variant="contained"

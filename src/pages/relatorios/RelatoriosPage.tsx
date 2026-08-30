@@ -159,7 +159,9 @@ export default function RelatoriosPage() {
     <Box sx={{ 
       p: { xs: 1.5, sm: 2, md: 3 },
       maxWidth: "100%",
-      overflowX: "hidden"
+      overflowX: "hidden",
+      '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem !important' },
+      '& .MuiInputLabel-root': { fontSize: '0.875rem !important' }
     }}>
       {/* Cabeçalho */}
       <Box sx={{ mb: 2 }}>
@@ -177,7 +179,7 @@ export default function RelatoriosPage() {
           variant="body2" 
           color="text.secondary" 
           sx={{ 
-            fontSize: { xs: "0.7rem", sm: "0.875rem" },
+            fontSize: { xs: "0.875rem", sm: "0.875rem" },
             mt: 0.5
           }}
         >
@@ -393,11 +395,9 @@ export default function RelatoriosPage() {
           startIcon={gerando ? <CircularProgress size={isMobile ? 18 : 20} /> : <PdfIcon />}
           onClick={handleGerarRelatorio}
           disabled={!planoSelecionado || !versaoSelecionada || gerando}
-          size={isMobile ? "small" : "medium"}
           sx={{
-            py: { xs: 1, sm: 1.5 },
-            fontSize: { xs: "0.75rem", sm: "0.875rem" },
-            minHeight: { xs: 42, sm: 48 }
+            minHeight: 44,
+            width: { xs: '100%', sm: 260 }
           }}
         >
           {gerando ? "Gerando..." : `Gerar Relatório ${tipoRelatorio === "completo" ? "Completo" : "Sintético"}`}

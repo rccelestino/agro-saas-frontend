@@ -631,7 +631,7 @@ export default function CadernoCampoPage() {
   // ============================================
   return (
     <Box sx={{ 
-      maxWidth: 1200, 
+      maxWidth: 1440,
       mx: 'auto', 
       px: { xs: 1.5, sm: 2, md: 2.5, lg: 3 },
       py: { xs: 2, sm: 2.5, md: 3 },
@@ -645,7 +645,7 @@ export default function CadernoCampoPage() {
         display: 'flex', 
         flexDirection: { xs: 'column', sm: 'row' },
         justifyContent: 'space-between',
-        alignItems: { xs: 'flex-start', sm: 'center' },
+        alignItems: { xs: 'stretch', sm: 'center' },
         gap: { xs: 1.5, sm: 2, md: 2 },
         mb: { xs: 2, sm: 2.5, md: 3 },
       }}>
@@ -655,12 +655,7 @@ export default function CadernoCampoPage() {
             fontWeight="bold" 
             color="primary.main"
             sx={{ 
-              fontSize: {
-                xs: '1.1rem',
-                sm: '1.25rem',
-                md: '1.5rem',
-                lg: '2rem',
-              },
+              fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
             }}
           >
             📖 Caderno de Campo
@@ -669,12 +664,7 @@ export default function CadernoCampoPage() {
             variant="body2" 
             color="text.secondary"
             sx={{ 
-              fontSize: {
-                xs: '0.65rem',
-                sm: '0.7rem',
-                md: '0.75rem',
-                lg: '0.875rem',
-              },
+              fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
             }}
           >
             {propriedadeAtual?.nome} • {total} atividade(s) registrada(s)
@@ -687,13 +677,12 @@ export default function CadernoCampoPage() {
           gap: { xs: 1, sm: 1.5, md: 2 },
           flexWrap: 'wrap',
           width: { xs: '100%', sm: 'auto' },
-          justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+          justifyContent: { xs: 'stretch', sm: 'flex-end' },
         }}>
           <Tooltip title="Atualizar">
             <IconButton 
               onClick={handleRefresh} 
               disabled={loading}
-              size="small"
               sx={{ 
                 border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
                 borderRadius: 2,
@@ -712,10 +701,7 @@ export default function CadernoCampoPage() {
               borderRadius: 2,
               bgcolor: alpha(theme.palette.primary.main, 0.04),
               borderColor: alpha(theme.palette.primary.main, 0.2),
-              '& .MuiChip-label': {
-                fontWeight: 500,
-                fontSize: { xs: '0.5rem', sm: '0.55rem', md: '0.6rem', lg: '0.75rem' },
-              },
+              '& .MuiChip-label': { fontWeight: 500, fontSize: '0.75rem' },
             }}
           />
 
@@ -726,10 +712,9 @@ export default function CadernoCampoPage() {
             fullWidth={isMobile}
             sx={{
               borderRadius: 2,
-              px: { xs: 1.5, sm: 2, md: 2.5, lg: 3 },
-              py: { xs: 0.6, sm: 0.8, md: 0.8, lg: 1 },
-              minWidth: { xs: '100%', sm: 120, md: 140, lg: 160 },
-              fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem', lg: '0.875rem' },
+              minHeight: 44,
+              width: { xs: '100%', sm: 'auto' },
+              minWidth: { sm: 180 },
             }}
           >
             Nova Atividade
@@ -753,7 +738,7 @@ export default function CadernoCampoPage() {
         sx={{
           display: 'grid',
           gridTemplateColumns: {
-            xs: 'repeat(2, 1fr)',
+            xs: '1fr',
             sm: 'repeat(2, 1fr)',
             md: 'repeat(4, 1fr)',
           },
@@ -802,16 +787,16 @@ export default function CadernoCampoPage() {
               flex: 1,
               '& .MuiOutlinedInput-root': {
                 borderRadius: { xs: 2, sm: 2, md: 2, lg: 3 },
-                fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem', lg: '0.875rem' },
+                fontSize: '1rem',
               }
             }}
           />
 
           <FormControl size="small" sx={{ 
-            minWidth: { xs: '100%', sm: 120, md: 150, lg: 200 },
-            maxWidth: { xs: '100%', sm: 160, md: 200, lg: 250 },
+            width: { xs: '100%', sm: 220 },
+            minWidth: { xs: '100%', sm: 220 },
           }}>
-            <InputLabel sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem', lg: '0.875rem' } }}>
+            <InputLabel>
               Tipo
             </InputLabel>
             <Select
@@ -820,7 +805,7 @@ export default function CadernoCampoPage() {
               onChange={(e) => setFilterTipo(e.target.value)}
               sx={{ 
                 borderRadius: { xs: 2, sm: 2, md: 2, lg: 3 },
-                fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem', lg: '0.875rem' },
+                fontSize: '1rem',
               }}
             >
               <MenuItem value="">Todos</MenuItem>
@@ -848,8 +833,8 @@ export default function CadernoCampoPage() {
                 onClick={() => { setSearchTerm(""); setFilterTipo(""); }}
                 size="small"
                 sx={{ 
-                  minHeight: { xs: 32, sm: 34, md: 36, lg: 40 },
-                  fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem', lg: '0.8rem' },
+                  minHeight: 44,
+                  fontSize: '0.9375rem',
                   borderRadius: { xs: 2, sm: 2, md: 2, lg: 3 },
                   px: { xs: 1, sm: 1.5, md: 2 },
                 }}
@@ -872,8 +857,8 @@ export default function CadernoCampoPage() {
                     bgcolor: viewMode === "grid" ? "primary.main" : "transparent",
                     color: viewMode === "grid" ? "white" : "text.secondary",
                     borderRadius: 1,
-                    width: { xs: 28, sm: 30, md: 34, lg: 40 },
-                    height: { xs: 28, sm: 30, md: 34, lg: 40 },
+                    width: 44,
+                    height: 44,
                     '&:hover': {
                       bgcolor: viewMode === "grid" ? "primary.dark" : alpha(theme.palette.primary.main, 0.1),
                     },
@@ -890,8 +875,8 @@ export default function CadernoCampoPage() {
                     bgcolor: viewMode === "list" ? "primary.main" : "transparent",
                     color: viewMode === "list" ? "white" : "text.secondary",
                     borderRadius: 1,
-                    width: { xs: 28, sm: 30, md: 34, lg: 40 },
-                    height: { xs: 28, sm: 30, md: 34, lg: 40 },
+                    width: 44,
+                    height: 44,
                     '&:hover': {
                       bgcolor: viewMode === "list" ? "primary.dark" : alpha(theme.palette.primary.main, 0.1),
                     },
@@ -912,28 +897,19 @@ export default function CadernoCampoPage() {
         borderBottom: 1, 
         borderColor: 'divider', 
         mb: { xs: 2, sm: 2.5, md: 3 },
-        overflowX: 'auto',
         width: '100%',
-        '&::-webkit-scrollbar': {
-          height: 3,
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.3),
-          borderRadius: 4,
-        },
       }}>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
+          variant={isMobile ? 'fullWidth' : 'standard'}
           sx={{
             '& .MuiTab-root': {
               textTransform: 'none',
               fontWeight: 500,
-              minHeight: { xs: 32, sm: 36, md: 40, lg: 48 },
-              fontSize: { xs: '0.55rem', sm: '0.6rem', md: '0.65rem', lg: '0.875rem' },
-              padding: { xs: '4px 6px', sm: '6px 8px', md: '8px 12px', lg: '12px 16px' },
+              minHeight: 44,
+              fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
+              padding: { xs: '6px 4px', sm: '8px 12px', md: '10px 16px' },
             }
           }}
         >

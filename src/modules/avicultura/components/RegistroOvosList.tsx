@@ -23,6 +23,9 @@ import {
   TextField,
   Grid,
   useTheme,
+  useMediaQuery,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -39,6 +42,7 @@ import { RegistroOvosForm } from './RegistroOvosForm';
 
 export const RegistroOvosList: React.FC = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { propriedadeAtual } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -148,9 +152,9 @@ export const RegistroOvosList: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ maxWidth: 1400, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+      <Box sx={{ maxWidth: 1440, mx: 'auto', px: { xs: 1.5, sm: 2, md: 3 }, py: { xs: 2, sm: 3 }, width: '100%' }}>
         {/* Cabeçalho */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={2}>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} mb={3} flexWrap="wrap" gap={2}>
           <Box>
             <Typography variant="h4" fontWeight="bold" color="primary.main">
               📋 Registros de Ovos
@@ -159,7 +163,7 @@ export const RegistroOvosList: React.FC = () => {
               {propriedadeAtual?.nome} • {registros.length} registro(s)
             </Typography>
           </Box>
-          <Box display="flex" gap={1}>
+          <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={1.5} width={{ xs: '100%', sm: 'auto' }} sx={{ '& .MuiButton-root': { minHeight: 44, width: { xs: '100%', sm: 180 } } }}>
             <Button
               variant="outlined"
               startIcon={<RefreshIcon />}
@@ -227,8 +231,8 @@ export const RegistroOvosList: React.FC = () => {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <Box display="flex" gap={1}>
+            <Grid item xs={12} md={3}>
+              <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={1} sx={{ '& .MuiButton-root': { minHeight: 44, width: { xs: '100%', sm: 180 } } }}>
                 <Button
                   variant="contained"
                   onClick={aplicarFiltros}
@@ -276,6 +280,53 @@ export const RegistroOvosList: React.FC = () => {
               </Button>
             )}
           </Paper>
+        ) : isMobile ? (
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1.5 }}>
+            {registros.map((registro) => (
+              <Card key={registro.id} variant="outlined" sx={{ width: '100%', borderRadius: 2 }}>
+                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={1} mb={2}>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="bold">{registro.galpaoNome}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {new Date(registro.dataRegistro).toLocaleDateString('pt-BR')}
+                      </Typography>
+                    </Box>
+                    <Chip
+                      label={`${registro.eficiencia.toFixed(1)}%`}
+                      color={registro.eficiencia >= 80 ? 'success' : registro.eficiencia >= 60 ? 'warning' : 'error'}
+                      size="small"
+                    />
+                  </Box>
+
+                  <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 1.25, mb: 2 }}>
+                    {[
+                      ['1ª coleta', registro.coleta1],
+                      ['2ª coleta', registro.coleta2],
+                      ['3ª coleta', registro.coleta3],
+                      ['Total', registro.totalColetas],
+                      ['Trincados', registro.totalOvosTrincados],
+                      ['Ovos bons', registro.ovosBons],
+                    ].map(([label, value]) => (
+                      <Box key={String(label)} sx={{ p: 1.25, borderRadius: 1.5, bgcolor: 'action.hover' }}>
+                        <Typography variant="caption" color="text.secondary">{label}</Typography>
+                        <Typography variant="body1" fontWeight="bold">{value}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+
+                  <Box display="flex" gap={1} sx={{ '& .MuiButton-root': { flex: 1, minHeight: 44 } }}>
+                    <Button variant="outlined" startIcon={<EditIcon />} onClick={() => { setSelectedRegistro(registro); setOpenForm(true); }}>
+                      Editar
+                    </Button>
+                    <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => handleDeleteClick(registro)}>
+                      Excluir
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
         ) : (
           <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
             <Table>

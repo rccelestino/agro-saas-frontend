@@ -112,9 +112,9 @@ export const GalpaoList: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+      <Box sx={{ maxWidth: 1440, mx: 'auto', px: { xs: 1.5, sm: 2, md: 3 }, py: { xs: 2, sm: 3 }, width: '100%' }}>
         {/* Cabeçalho */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={2}>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} mb={3} flexWrap="wrap" gap={2}>
           <Box>
             <Typography variant="h4" fontWeight="bold" color="primary.main">
               🏠 Galpões
@@ -130,6 +130,7 @@ export const GalpaoList: React.FC = () => {
               setSelectedGalpao(undefined);
               setOpenForm(true);
             }}
+            sx={{ minHeight: 44, width: { xs: '100%', sm: 180 } }}
           >
             Novo Galpão
           </Button>
@@ -162,19 +163,22 @@ export const GalpaoList: React.FC = () => {
             </Button>
           </Paper>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 1.5, sm: 2, md: 2.5 }} alignItems="stretch">
             {galoes.map((galpao) => (
-              <Grid item xs={12} sm={6} md={4} key={galpao.id}>
+              <Grid item xs={12} sm={6} md={4} key={galpao.id} sx={{ display: 'flex' }}>
                 <Card sx={{ 
                   borderRadius: 2, 
                   height: '100%',
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   transition: 'all 0.2s',
                   '&:hover': {
                     boxShadow: 4,
                     transform: 'translateY(-4px)',
                   }
                 }}>
-                  <CardContent>
+                  <CardContent sx={{ flex: 1 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                       <Typography variant="h6" fontWeight="bold">
                         {galpao.nome}

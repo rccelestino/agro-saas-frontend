@@ -129,7 +129,7 @@ export default function DashboardLayout() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", width: "100%", minHeight: "100dvh" }}>
       <CssBaseline />
       
       {/* AppBar - Mobile */}
@@ -180,7 +180,7 @@ export default function DashboardLayout() {
           mt: { xs: "56px", sm: 0 },
           bgcolor: '#f5f5f5',
           minHeight: "100vh",
-          overflowX: "auto",
+          overflowX: "hidden",
         }}
       >
         {/* IDENTIFICAÇÃO DA EMPRESA NO TOPO - APENAS PARA SUPER ADMIN */}

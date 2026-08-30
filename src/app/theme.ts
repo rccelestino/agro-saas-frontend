@@ -6,13 +6,10 @@ import type { ThemeOptions } from '@mui/material'; // ✅ Importar do @mui/mater
 export const breakpoints = {
   values: {
     xs: 0,
-    sm: 600,
-    md: 900,
-    lg: 1200,
-    xl: 1536,
-    mobile: 480,
-    tablet: 768,
-    desktop: 1024,
+    sm: 769,
+    md: 1025,
+    lg: 1441,
+    xl: 1920,
   },
 };
 
@@ -67,19 +64,19 @@ export const typography = {
   body1: {
     fontSize: '1rem',
     '@media (max-width:600px)': {
-      fontSize: '0.875rem',
+      fontSize: '0.9375rem',
     },
   },
   body2: {
     fontSize: '0.875rem',
     '@media (max-width:600px)': {
-      fontSize: '0.8rem',
+      fontSize: '0.875rem',
     },
   },
   button: {
-    fontSize: '0.875rem',
+    fontSize: '1rem',
     '@media (max-width:600px)': {
-      fontSize: '0.8rem',
+      fontSize: '0.9375rem',
     },
   },
 };
@@ -131,10 +128,12 @@ const themeOptions: ThemeOptions = {
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 600,
-          padding: '10px 24px',
+          minHeight: 44,
+          padding: '10px 20px',
           '@media (max-width:600px)': {
-            padding: '8px 16px',
-            fontSize: '0.8rem',
+            minHeight: 44,
+            padding: '10px 16px',
+            fontSize: '0.9375rem',
           },
         },
         contained: {
@@ -173,6 +172,9 @@ const themeOptions: ThemeOptions = {
           '& .MuiOutlinedInput-root': {
             borderRadius: 8,
           },
+          '& .MuiInputBase-input': {
+            fontSize: '1rem',
+          },
         },
       },
     },
@@ -199,8 +201,10 @@ const themeOptions: ThemeOptions = {
     MuiIconButton: {
       styleOverrides: {
         root: {
+          minWidth: 44,
+          minHeight: 44,
           '@media (max-width:600px)': {
-            padding: 8,
+            padding: 10,
             '& .MuiSvgIcon-root': {
               fontSize: '1.2rem',
             },
@@ -215,6 +219,22 @@ const themeOptions: ThemeOptions = {
           '@media (max-width:600px)': {
             margin: 16,
             width: 'calc(100% - 32px)',
+          },
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          gap: 12,
+          '@media (max-width:768px)': {
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            '& > .MuiButton-root': {
+              width: '100%',
+              minHeight: 44,
+              marginLeft: '0 !important',
+            },
           },
         },
       },

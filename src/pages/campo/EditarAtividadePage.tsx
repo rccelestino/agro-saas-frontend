@@ -308,7 +308,14 @@ export default function EditarAtividadePage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", px: { xs: 1.5, sm: 2, md: 3 } }}>
+    <Box sx={{
+      maxWidth: 1200,
+      mx: "auto",
+      px: { xs: 1.5, sm: 2, md: 3 },
+      '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem !important' },
+      '& .MuiInputLabel-root': { fontSize: '0.875rem !important' },
+      '& .MuiFormHelperText-root': { fontSize: '0.8125rem !important', lineHeight: 1.4 },
+    }}>
       {/* ============================================ */}
       {/* CABEÇALHO */}
       {/* ============================================ */}
@@ -900,6 +907,11 @@ export default function EditarAtividadePage() {
                 justifyContent: { xs: "center", sm: "space-between" },
                 flexWrap: "wrap",
                 flexDirection: { xs: "column-reverse", sm: "row" },
+                width: '100%',
+                '& .MuiButton-root': {
+                  minHeight: 44,
+                  width: { xs: '100%', sm: 200 },
+                },
               }}>
                 <Button
                   variant="outlined"
@@ -912,7 +924,7 @@ export default function EditarAtividadePage() {
                     px: 3,
                     borderColor: alpha(theme.palette.error.main, 0.3),
                     color: 'error.main',
-                    width: { xs: '100%', sm: 'auto' },
+                    width: { xs: '100%', sm: 200 },
                     fontSize: { xs: '0.8rem', sm: '0.875rem' },
                     '&:hover': {
                       borderColor: 'error.main',
@@ -923,14 +935,15 @@ export default function EditarAtividadePage() {
                   Excluir
                 </Button>
                 
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', width: { xs: '100%', sm: 416 } }}>
                   <Button
                     variant="outlined"
                     onClick={() => navigate("/caderno-campo")}
                     sx={{ 
                       borderRadius: 2,
                       height: 48,
-                      minWidth: { xs: '100%', sm: 140 },
+                      minWidth: 0,
+                      width: { xs: '100%', sm: 200 },
                       borderColor: alpha(theme.palette.error.main, 0.3),
                       color: 'error.main',
                       fontSize: { xs: '0.8rem', sm: '0.875rem' },
@@ -951,7 +964,8 @@ export default function EditarAtividadePage() {
                       borderRadius: 2,
                       height: 48,
                       px: 4,
-                      minWidth: { xs: '100%', sm: 200 },
+                      minWidth: 0,
+                      width: { xs: '100%', sm: 200 },
                       fontSize: { xs: '0.8rem', sm: '0.875rem' },
                       boxShadow: theme.shadows[2],
                       '&:hover': {

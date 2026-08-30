@@ -1,6 +1,6 @@
 // src/pages/dashboard/DashboardHome.tsx
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Paper, Typography, CircularProgress, Alert, Tabs, Tab, Button } from '@mui/material';
+import { Box, Grid, Paper, Typography, CircularProgress, Alert, Tabs, Tab, Button, useTheme, useMediaQuery } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
 import { useAuth } from '../../auth/AuthContext';
 import { useOutletContext } from 'react-router-dom';
@@ -8,6 +8,7 @@ import type { DashboardResponse, ScoreResponse, NaoConformidadeResponse } from '
 import { dashboardApi } from '../../modules/dashboard/services/dashboard.api';
 import { ScoreCards } from '../../modules/dashboard/components/ScoreCards';
 import { TimelineEvents } from '../../modules/dashboard/components/TimelineEvents';
+import { ResponsiveContainer } from '../../components/common/ResponsiveContainer';
 
 interface OutletContext {
   selectedEmpresaId: number | null;
@@ -27,12 +28,14 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
   return (
     <div role="tabpanel" hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 } }}>{children}</Box>}
     </div>
   );
 }
 
 export const DashboardHome: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user } = useAuth();
   const outletContext = useOutletContext<OutletContext>();
   const [loading, setLoading] = useState(true);
@@ -112,7 +115,7 @@ export const DashboardHome: React.FC = () => {
 
   if (error) {
     return (
-      <Box p={3}>
+      <Box p={{ xs: 2, sm: 3 }}>
         <Alert 
           severity="error" 
           action={
@@ -129,7 +132,7 @@ export const DashboardHome: React.FC = () => {
 
   if (!dashboard) {
     return (
-      <Box p={3}>
+      <Box p={{ xs: 2, sm: 3 }}>
         <Alert severity="warning">
           Nenhum dado disponível para esta empresa.
         </Alert>
@@ -144,45 +147,58 @@ export const DashboardHome: React.FC = () => {
   const scoreColor = mediaScore >= 70 ? '#4caf50' : mediaScore >= 50 ? '#ff9800' : '#f44336';
 
   return (
-    <Box p={3}>
+    <ResponsiveContainer maxWidth="xl" padding>
       {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h4" fontWeight="bold">
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={{ xs: 1.5, sm: 2 }}
+        mb={{ xs: 2, sm: 3, md: 4 }}
+      >
+        <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' } }}>
           Dashboard AgroSaaS
         </Typography>
-        <Button variant="outlined" startIcon={<Refresh />} onClick={loadDashboard}>
+        <Button
+          variant="outlined"
+          startIcon={<Refresh />}
+          onClick={loadDashboard}
+          fullWidth={isMobile}
+          sx={{ minHeight: 44, width: { xs: '100%', sm: 'auto' } }}
+        >
           Atualizar
         </Button>
       </Box>
 
       {/* Cards de Resumo */}
-      <Grid container spacing={3} mb={4}>
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper sx={{ p: 3, borderRadius: 4, textAlign: 'center' }}>
+      <Grid container spacing={{ xs: 1.5, sm: 2, md: 2.5 }} mb={{ xs: 2, sm: 3, md: 4 }} alignItems="stretch">
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+          <Paper sx={{ p: { xs: 2, sm: 2.5, md: 3 }, borderRadius: 3, textAlign: 'center', width: '100%', minHeight: 156, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography variant="h3" fontWeight="bold" color={scoreColor}>
               {Math.round(mediaScore)}%
             </Typography>
             <Typography variant="body2" color="text.secondary">Score Médio Geral</Typography>
           </Paper>
         </Grid>
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper sx={{ p: 3, borderRadius: 4, textAlign: 'center' }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+          <Paper sx={{ p: { xs: 2, sm: 2.5, md: 3 }, borderRadius: 3, textAlign: 'center', width: '100%', minHeight: 156, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography variant="h3" fontWeight="bold" color="primary">
               {resumo?.totalPropriedades || 0}
             </Typography>
             <Typography variant="body2" color="text.secondary">Propriedades</Typography>
           </Paper>
         </Grid>
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper sx={{ p: 3, borderRadius: 4, textAlign: 'center' }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+          <Paper sx={{ p: { xs: 2, sm: 2.5, md: 3 }, borderRadius: 3, textAlign: 'center', width: '100%', minHeight: 156, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography variant="h3" fontWeight="bold" color="error">
               {resumo?.totalNaoConformidadesAbertas || 0}
             </Typography>
             <Typography variant="body2" color="text.secondary">Não Conformidades Abertas</Typography>
           </Paper>
         </Grid>
-        <Grid size={{ xs: 12, md: 3 }}>
-          <Paper sx={{ p: 3, borderRadius: 4, textAlign: 'center' }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+          <Paper sx={{ p: { xs: 2, sm: 2.5, md: 3 }, borderRadius: 3, textAlign: 'center', width: '100%', minHeight: 156, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Typography variant="h3" fontWeight="bold" color="info.main">
               {resumo?.totalEventosHoje || 0}
             </Typography>
@@ -210,7 +226,12 @@ export const DashboardHome: React.FC = () => {
       {/* Detalhes da Propriedade Selecionada */}
       {selectedPropriedade && (
         <Paper sx={{ borderRadius: 4, overflow: 'hidden' }}>
-          <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}>
+          <Tabs
+            value={tabValue}
+            onChange={(_, v) => setTabValue(v)}
+            variant={isMobile ? 'fullWidth' : 'standard'}
+            sx={{ borderBottom: 1, borderColor: 'divider', px: { xs: 0, sm: 2 }, '& .MuiTab-root': { minHeight: 44, fontSize: { xs: '0.875rem', sm: '1rem' } } }}
+          >
             <Tab label="Timeline" />
             <Tab label="Não Conformidades" />
           </Tabs>
@@ -239,7 +260,7 @@ export const DashboardHome: React.FC = () => {
           </TabPanel>
         </Paper>
       )}
-    </Box>
+    </ResponsiveContainer>
   );
 };
 export default DashboardHome;

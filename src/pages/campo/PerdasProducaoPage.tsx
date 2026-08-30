@@ -197,7 +197,7 @@ export default function PerdasProducaoPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+    <Box sx={{ maxWidth: 1440, mx: 'auto', px: { xs: 1.5, sm: 2, md: 3 }, py: { xs: 2, sm: 3 }, '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem !important' }, '& .MuiInputLabel-root': { fontSize: '0.875rem !important' } }}>
       {/* Cabeçalho */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Box>
@@ -414,7 +414,7 @@ export default function PerdasProducaoPage() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: 2, gap: 1 }}>
+        <DialogActions sx={{ p: 2, gap: 1.5, flexDirection: { xs: 'column', sm: 'row' }, '& .MuiButton-root': { minHeight: 44, width: { xs: '100%', sm: 180 } } }}>
           <Button onClick={() => setOpenDialog(false)} variant="outlined">Cancelar</Button>
           <Button onClick={handleSubmit} variant="contained" startIcon={<SaveIcon />}>
             {editing ? 'Atualizar' : 'Salvar'}

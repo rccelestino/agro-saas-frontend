@@ -198,7 +198,7 @@ export default function TalhoesPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 }, py: 3 }}>
+    <Box sx={{ maxWidth: 1440, mx: 'auto', px: { xs: 1.5, sm: 2, md: 3 }, py: { xs: 2, sm: 3 }, '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem !important' }, '& .MuiInputLabel-root': { fontSize: '0.875rem !important' } }}>
       {/* Cabeçalho */}
       <Box sx={{ 
         display: 'flex', 
@@ -414,7 +414,7 @@ export default function TalhoesPage() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: { xs: 2, sm: 2.5 }, gap: 1, flexWrap: 'wrap' }}>
+        <DialogActions sx={{ p: { xs: 2, sm: 2.5 }, gap: 1.5, flexDirection: { xs: 'column', sm: 'row' }, '& .MuiButton-root': { minHeight: 44, width: { xs: '100%', sm: 180 } } }}>
           <Button
             variant="outlined"
             onClick={handleCloseDialog}
@@ -456,7 +456,7 @@ export default function TalhoesPage() {
             Esta ação não poderá ser desfeita e todas as atividades associadas serão afetadas.
           </Typography>
         </DialogContent>
-        <DialogActions sx={{ p: 2.5, gap: 1, flexWrap: 'wrap' }}>
+        <DialogActions sx={{ p: 2.5, gap: 1.5, flexDirection: { xs: 'column', sm: 'row' }, '& .MuiButton-root': { minHeight: 44, width: { xs: '100%', sm: 180 } } }}>
           <Button
             variant="outlined"
             onClick={handleDeleteCancel}

@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../agro-saas-llamaparse"
+		},
+		{
+			"path": "../agro-saas-backend"
 		}
 	],
 	"settings": {}

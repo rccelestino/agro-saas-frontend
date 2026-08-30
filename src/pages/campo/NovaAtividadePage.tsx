@@ -349,7 +349,14 @@ export default function NovaAtividadePage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", px: { xs: 1.5, sm: 2, md: 3 } }}>
+    <Box sx={{
+      maxWidth: 1200,
+      mx: "auto",
+      px: { xs: 1.5, sm: 2, md: 3 },
+      '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem !important' },
+      '& .MuiInputLabel-root': { fontSize: '0.875rem !important' },
+      '& .MuiFormHelperText-root': { fontSize: '0.8125rem !important', lineHeight: 1.4 },
+    }}>
       {/* ============================================ */}
       {/* CABEÇALHO - MAIS COMPACTO */}
       {/* ============================================ */}
@@ -357,7 +364,7 @@ export default function NovaAtividadePage() {
         display: "flex", 
         flexDirection: { xs: "column", sm: "row" },
         justifyContent: "space-between", 
-        alignItems: { xs: "flex-start", sm: "center" },
+        alignItems: { xs: "stretch", sm: "center" },
         gap: { xs: 1.5, sm: 2 },
         mb: { xs: 2, sm: 2.5, md: 3 },
       }}>
@@ -367,7 +374,7 @@ export default function NovaAtividadePage() {
             fontWeight="bold" 
             color="primary.main"
             sx={{ 
-              fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem', lg: '2rem' },
+              fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
               display: "flex",
               alignItems: "center",
               gap: 1,
@@ -379,7 +386,7 @@ export default function NovaAtividadePage() {
             variant="body2" 
             color="text.secondary"
             sx={{ 
-              fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem', lg: '0.875rem' },
+              fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
               mt: 0.25,
             }}
           >
@@ -423,12 +430,13 @@ export default function NovaAtividadePage() {
             size="small"
             sx={{ 
               borderRadius: 2,
-              height: { xs: 36, sm: 40 },
+              minHeight: 44,
               px: { xs: 1.5, sm: 2 },
-              minWidth: { xs: 80, sm: 100 },
+              width: { xs: '100%', sm: 'auto' },
+              minWidth: { sm: 120 },
               borderColor: alpha(theme.palette.primary.main, 0.3),
               color: 'text.secondary',
-              fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.8rem' },
+              fontSize: '0.9375rem',
               '&:hover': {
                 borderColor: 'primary.main',
                 bgcolor: alpha(theme.palette.primary.main, 0.04),
@@ -499,7 +507,7 @@ export default function NovaAtividadePage() {
       {/* ============================================ */}
       {/* FORMULÁRIO PRINCIPAL */}
       {/* ============================================ */}
-      <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, borderRadius: 3 }}>
+      <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, borderRadius: 3, width: '100%' }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
             {/* ========================================== */}
@@ -1142,6 +1150,11 @@ export default function NovaAtividadePage() {
                 justifyContent: { xs: "center", sm: "flex-end" },
                 flexWrap: "wrap",
                 flexDirection: { xs: "column", sm: "row" },
+                width: '100%',
+                '& .MuiButton-root': {
+                  minHeight: 44,
+                  width: { xs: '100%', sm: 200 },
+                },
               }}>
                 <Button
                   variant="outlined"
@@ -1149,7 +1162,7 @@ export default function NovaAtividadePage() {
                   sx={{ 
                     borderRadius: 2,
                     height: { xs: 44, sm: 46, md: 48 },
-                    minWidth: { xs: '100%', sm: 140 },
+                    minWidth: 0,
                     borderColor: alpha(theme.palette.error.main, 0.3),
                     color: 'error.main',
                     fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
@@ -1170,7 +1183,7 @@ export default function NovaAtividadePage() {
                     borderRadius: 2,
                     height: { xs: 44, sm: 46, md: 48 },
                     px: { xs: 2, sm: 3, md: 4 },
-                    minWidth: { xs: '100%', sm: 200 },
+                    minWidth: 0,
                     fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' },
                     boxShadow: theme.shadows[2],
                     '&:hover': {

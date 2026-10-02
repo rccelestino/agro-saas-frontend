@@ -10,5 +10,7 @@
 			"path": "../agro-saas-backend"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.compile.nullAnalysis.mode": "disabled"
+	}
 }

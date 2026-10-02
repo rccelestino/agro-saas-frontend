@@ -36,6 +36,7 @@ import {
   Timer as TimerIcon,
   Check as CheckIcon,
   MyLocation as MyLocationIcon,
+  EditNote as EditNoteIcon,
 } from "@mui/icons-material";
 import GravadorAudio from "./components/GravadorAudio";
 import { campoApi } from "../../api/campo.api";
@@ -350,7 +351,7 @@ export default function NovaAtividadePage() {
 
   return (
     <Box sx={{
-      maxWidth: 1200,
+      maxWidth: 1120,
       mx: "auto",
       px: { xs: 1.5, sm: 2, md: 3 },
       '& .MuiInputBase-input, & .MuiSelect-select': { fontSize: '1rem !important' },
@@ -369,19 +370,14 @@ export default function NovaAtividadePage() {
         mb: { xs: 2, sm: 2.5, md: 3 },
       }}>
         <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
-          <Typography 
-            variant="h4" 
-            fontWeight="bold" 
-            color="primary.main"
-            sx={{ 
-              fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            📝 Nova Atividade
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+            <Box sx={{ width: 44, height: 44, borderRadius: 2, display: 'grid', placeItems: 'center', bgcolor: alpha(theme.palette.primary.main, 0.1), color: 'primary.main' }}>
+              <EditNoteIcon />
+            </Box>
+            <Typography variant="h4" fontWeight={700} color="text.primary" sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }, lineHeight: 1.15 }}>
+              Nova atividade
+            </Typography>
+          </Box>
           <Typography 
             variant="body2" 
             color="text.secondary"
@@ -507,7 +503,7 @@ export default function NovaAtividadePage() {
       {/* ============================================ */}
       {/* FORMULÁRIO PRINCIPAL */}
       {/* ============================================ */}
-      <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, borderRadius: 3, width: '100%' }}>
+      <Paper elevation={0} sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: 3, width: '100%', border: '1px solid', borderColor: 'divider', boxShadow: `0 8px 28px ${alpha(theme.palette.common.black, 0.06)}` }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
             {/* ========================================== */}
@@ -542,7 +538,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Tipo de Atividade */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <FormControl fullWidth required>
                 <InputLabel sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
                   Tipo de Atividade
@@ -573,7 +569,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Data/Hora */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Data/Hora da Atividade"
@@ -601,7 +597,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Talhão */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
                   Talhão
@@ -632,7 +628,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Cultura */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <InputLabel sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.875rem' } }}>
                   Cultura
@@ -720,7 +716,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Insumo */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={12}>
               <TextField
                 fullWidth
                 label="Insumo Utilizado"
@@ -746,7 +742,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Dosagem e Área */}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
                 label="Dosagem"
@@ -777,7 +773,7 @@ export default function NovaAtividadePage() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
                 label="Área Aplicada"
@@ -809,7 +805,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Quantidade Produzida */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Quantidade Produzida"
@@ -886,7 +882,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Geolocalização */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <Paper 
                 variant="outlined" 
                 sx={{ 
@@ -996,7 +992,7 @@ export default function NovaAtividadePage() {
             </Grid>
 
             {/* Áudio */}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <Paper variant="outlined" sx={{ p: { xs: 1.5, sm: 2 }, borderRadius: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
                   <Box sx={{ 

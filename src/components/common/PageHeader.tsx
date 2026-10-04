@@ -50,12 +50,12 @@ export function PageHeader({
               startIcon={<ArrowBackIcon />}
               onClick={handleBack}
               variant="outlined"
-              size="small"
               sx={{
                 borderRadius: 2,
                 borderColor: alpha(theme.palette.primary.main, 0.3),
                 color: 'text.secondary',
                 minWidth: { xs: 80, sm: 100 },
+                minHeight: 44,
                 '&:hover': {
                   borderColor: 'primary.main',
                   bgcolor: alpha(theme.palette.primary.main, 0.04),
@@ -86,7 +86,7 @@ export function PageHeader({
                 variant="body2"
                 color="text.secondary"
                 sx={{
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                  fontSize: '0.875rem',
                   mt: 0.5,
                 }}
               >

@@ -19,7 +19,7 @@ export const typography = {
   h1: {
     fontSize: '2.5rem',
     fontWeight: 700,
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '1.8rem',
     },
     '@media (max-width:400px)': {
@@ -29,53 +29,53 @@ export const typography = {
   h2: {
     fontSize: '2rem',
     fontWeight: 600,
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '1.5rem',
     },
   },
   h3: {
     fontSize: '1.75rem',
     fontWeight: 600,
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '1.3rem',
     },
   },
   h4: {
     fontSize: '1.5rem',
     fontWeight: 600,
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '1.1rem',
     },
   },
   h5: {
     fontSize: '1.25rem',
     fontWeight: 500,
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '1rem',
     },
   },
   h6: {
     fontSize: '1rem',
     fontWeight: 500,
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '0.9rem',
     },
   },
   body1: {
     fontSize: '1rem',
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '0.9375rem',
     },
   },
   body2: {
     fontSize: '0.875rem',
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '0.875rem',
     },
   },
   button: {
     fontSize: '1rem',
-    '@media (max-width:600px)': {
+    '@media (max-width:768px)': {
       fontSize: '0.9375rem',
     },
   },
@@ -130,7 +130,7 @@ const themeOptions: ThemeOptions = {
           fontWeight: 600,
           minHeight: 44,
           padding: '10px 20px',
-          '@media (max-width:600px)': {
+          '@media (max-width:768px)': {
             minHeight: 44,
             padding: '10px 16px',
             fontSize: '0.9375rem',
@@ -160,7 +160,7 @@ const themeOptions: ThemeOptions = {
       styleOverrides: {
         root: {
           padding: '24px',
-          '@media (max-width:600px)': {
+          '@media (max-width:768px)': {
             padding: '16px',
           },
         },
@@ -181,9 +181,9 @@ const themeOptions: ThemeOptions = {
     MuiTableCell: {
       styleOverrides: {
         root: {
-          '@media (max-width:600px)': {
+          '@media (max-width:768px)': {
             padding: '8px 4px',
-            fontSize: '0.75rem',
+            fontSize: '0.875rem',
           },
         },
       },
@@ -191,9 +191,9 @@ const themeOptions: ThemeOptions = {
     MuiChip: {
       styleOverrides: {
         root: {
-          '@media (max-width:600px)': {
-            fontSize: '0.65rem',
-            height: 24,
+          '@media (max-width:768px)': {
+            fontSize: '0.75rem',
+            minHeight: 28,
           },
         },
       },
@@ -203,7 +203,7 @@ const themeOptions: ThemeOptions = {
         root: {
           minWidth: 44,
           minHeight: 44,
-          '@media (max-width:600px)': {
+          '@media (max-width:768px)': {
             padding: 10,
             '& .MuiSvgIcon-root': {
               fontSize: '1.2rem',
@@ -216,7 +216,7 @@ const themeOptions: ThemeOptions = {
       styleOverrides: {
         paper: {
           borderRadius: 16,
-          '@media (max-width:600px)': {
+          '@media (max-width:768px)': {
             margin: 16,
             width: 'calc(100% - 32px)',
           },
@@ -242,7 +242,7 @@ const themeOptions: ThemeOptions = {
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          '@media (max-width:600px)': {
+          '@media (max-width:768px)': {
             width: '85%',
             maxWidth: 320,
           },
@@ -254,11 +254,11 @@ const themeOptions: ThemeOptions = {
         root: {
           paddingLeft: '16px',
           paddingRight: '16px',
-          '@media (min-width:600px)': {
+          '@media (min-width:769px)': {
             paddingLeft: '24px',
             paddingRight: '24px',
           },
-          '@media (min-width:960px)': {
+          '@media (min-width:1025px)': {
             paddingLeft: '32px',
             paddingRight: '32px',
           },
@@ -271,7 +271,7 @@ const themeOptions: ThemeOptions = {
           '& .MuiGrid-item': {
             paddingTop: '12px',
             paddingLeft: '12px',
-            '@media (max-width:600px)': {
+            '@media (max-width:768px)': {
               paddingTop: '8px',
               paddingLeft: '8px',
             },

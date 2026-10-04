@@ -34,8 +34,8 @@ const CompanySelector: React.FC<CompanySelectorProps> = ({
   const selectedCompany = companies.find(c => c.id === selectedCompanyId);
 
   return (
-    <Box display="flex" alignItems="center" gap={2}>
-      <FormControl size="small" sx={{ minWidth: 250 }}>
+    <Box display="flex" alignItems="center" gap={2} flexWrap="wrap" width="100%">
+      <FormControl size="small" sx={{ width: { xs: '100%', sm: 250 } }}>
         <InputLabel>{label}</InputLabel>
         <Select
           value={selectedCompanyId || ''}

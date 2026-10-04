@@ -13,10 +13,10 @@ export default function PropertySelector() {
   }
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: { xs: 0, sm: 2 } }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: { xs: 0, sm: 2 }, width: { xs: '100%', sm: 'auto' } }}>
       <Storefront sx={{ fontSize: { xs: 18, sm: 20 }, opacity: 0.8 }} />
-      <FormControl size="small" sx={{ minWidth: { xs: 140, sm: 180 } }}>
-        <InputLabel sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}>Propriedade</InputLabel>
+      <FormControl size="small" sx={{ width: { xs: '100%', sm: 180 } }}>
+        <InputLabel sx={{ fontSize: '0.875rem' }}>Propriedade</InputLabel>
         <Select
           value={propriedadeAtual?.id || ""}
           onChange={(e) => {
@@ -24,10 +24,10 @@ export default function PropertySelector() {
             if (prop) setPropriedadeAtual(prop);
           }}
           label="Propriedade"
-          sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}
+          sx={{ fontSize: '1rem' }}
         >
           {propriedades.map((prop) => (
-            <MenuItem key={prop.id} value={prop.id} sx={{ fontSize: { xs: "0.7rem", sm: "0.875rem" } }}>
+            <MenuItem key={prop.id} value={prop.id} sx={{ fontSize: '1rem', whiteSpace: 'normal' }}>
               {prop.nome}
               {prop.localizacao && ` (${prop.localizacao})`}
             </MenuItem>

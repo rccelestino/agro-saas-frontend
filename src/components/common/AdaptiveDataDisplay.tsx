@@ -26,7 +26,7 @@ export function AdaptiveDataDisplay<T>({
   onRowClick,
 }: AdaptiveDataDisplayProps<T>) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   if (data.length === 0) {
     return (

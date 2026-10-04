@@ -42,8 +42,9 @@ export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({
   onRowClick,
 }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  // Listas densas deixam de usar tabela até telas grandes. Isso evita scroll
+  // horizontal em telefones, tablets e notebooks compactos.
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   const visibleColumns = columns.filter(col => !isMobile || col.mobile !== false);
 
@@ -100,7 +101,7 @@ export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({
   // Modo Desktop: Tabela
   return (
     <TableContainer component={Paper} sx={{ borderRadius: 2, overflowX: 'auto' }}>
-      <Table size={isTablet ? 'small' : 'medium'}>
+      <Table size="medium">
         <TableHead sx={{ bgcolor: '#f5f5f5' }}>
           <TableRow>
             {visibleColumns.map((col) => (
@@ -109,7 +110,7 @@ export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({
                 align={col.align || 'left'}
                 sx={{
                   fontWeight: 600,
-                  fontSize: isTablet ? '0.75rem' : '0.875rem',
+                  fontSize: '0.875rem',
                   width: col.width || 'auto',
                 }}
               >
@@ -134,8 +135,8 @@ export const ResponsiveTable: React.FC<ResponsiveTableProps> = ({
                   key={col.id}
                   align={col.align || 'left'}
                   sx={{
-                    fontSize: isTablet ? '0.7rem' : '0.875rem',
-                    py: isTablet ? 1 : 1.5,
+                    fontSize: '0.875rem',
+                    py: 1.5,
                   }}
                 >
                   {col.render ? col.render(row) : row[col.id] || '-'}

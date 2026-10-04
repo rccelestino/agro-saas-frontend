@@ -8,7 +8,6 @@ import {
   IconButton, 
   Typography, 
   useTheme, 
-  useMediaQuery,
   Stack,
   CssBaseline,
   Chip,
@@ -41,7 +40,6 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, email, nome, role, user } = useAuth();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mobileOpen, setMobileOpen] = useState(false);
   
   // Estado para empresas e seleção (apenas para SUPER_ADMIN)
@@ -138,7 +136,7 @@ export default function DashboardLayout() {
         sx={{
           zIndex: theme.zIndex.drawer + 1,
           backgroundColor: "primary.main",
-          display: { xs: "flex", sm: "none" },
+          display: { xs: "flex", md: "none" },
         }}
       >
         <Toolbar sx={{ minHeight: { xs: 56, sm: 64 }, justifyContent: "space-between" }}>
@@ -175,9 +173,11 @@ export default function DashboardLayout() {
         sx={{
           flexGrow: 1,
           p: { xs: 2, sm: 2.5, md: 3 },
-          width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          ml: { sm: `${DRAWER_WIDTH}px` },
-          mt: { xs: "56px", sm: 0 },
+          // A coluna <nav> já reserva a largura do drawer permanente. Não
+          // adicionar margem aqui evita o deslocamento duplo do conteúdo.
+          width: '100%',
+          ml: 0,
+          mt: { xs: "56px", sm: "64px", md: 0 },
           bgcolor: '#f5f5f5',
           minHeight: "100vh",
           overflowX: "hidden",

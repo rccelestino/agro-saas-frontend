@@ -923,13 +923,12 @@ export default function NovaAtividadePage() {
                       startIcon={capturandoLocalizacao ? <CircularProgress size={16} color="inherit" /> : <MyLocationIcon />}
                       onClick={handleCapturarLocalizacao}
                       disabled={capturandoLocalizacao}
-                      size="small"
                       sx={{ 
                         borderRadius: 2,
-                        height: { xs: 32, sm: 36 },
+                        minHeight: 44,
                         px: { xs: 1, sm: 1.5, md: 2 },
-                        minWidth: { xs: 80, sm: 100 },
-                        fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
+                        minWidth: { xs: 120, sm: 140 },
+                        fontSize: '0.875rem',
                         whiteSpace: 'nowrap',
                       }}
                     >
@@ -1118,8 +1117,8 @@ export default function NovaAtividadePage() {
                             bgcolor: "rgba(0,0,0,0.6)",
                             color: "white",
                             "&:hover": { bgcolor: "rgba(0,0,0,0.8)" },
-                            width: { xs: 18, sm: 20, md: 24 },
-                            height: { xs: 18, sm: 20, md: 24 },
+                          width: 44,
+                          height: 44,
                           }}
                           onClick={(e) => {
                             e.stopPropagation();

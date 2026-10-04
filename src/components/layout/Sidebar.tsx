@@ -58,7 +58,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
   const navigate = useNavigate();
   const location = useLocation();
   const { logout, role } = useAuth();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   
   // Estado para menus expansíveis
   const [openSoloBiodiversidade, setOpenSoloBiodiversidade] = useState(false);
@@ -596,8 +596,8 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
     <Box
       component="nav"
       sx={{
-        width: { sm: DRAWER_WIDTH },
-        flexShrink: { sm: 0 },
+        width: { md: DRAWER_WIDTH },
+        flexShrink: { md: 0 },
       }}
     >
       {/* Drawer para mobile (temporary) */}
@@ -607,10 +607,11 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
         sx={{
-          display: { xs: "block", sm: "none" },
+          display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
-            width: DRAWER_WIDTH,
+            width: '85%',
+            maxWidth: 320,
             backgroundColor: "background.paper",
             boxShadow: "0 0 15px rgba(0,0,0,0.1)",
           },
@@ -623,7 +624,7 @@ export default function Sidebar({ mobileOpen, handleDrawerToggle }: SidebarProps
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: "none", sm: "block" },
+          display: { xs: "none", md: "block" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: DRAWER_WIDTH,
